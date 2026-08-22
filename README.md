@@ -60,15 +60,13 @@ Model
 ```text
 Car4Web
 ├── src/main/java
-│       ├── java
-│       │   ├── controller
-│       │   ├── service
-│       │   ├── dao
-│       │   ├── model
-│       │   ├── util
-│       │   ├── vo
-│       │   └── exception
-│       └── resources
+│      ├── config
+│      ├── controller
+│      ├── service
+│      ├── dao
+│      ├── model
+│      ├── util
+│      ├── view
 ├── pom.xml
 └── README.md
 ```
