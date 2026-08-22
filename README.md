@@ -78,8 +78,9 @@ Car4Web
 ## 系統登入
 
 * 主功能選單
-* 社區車輛進出模擬畫面
+* 社區車輛進出車牌識別 
 * 社區管理員登入
+* 
 
 ## 管理員管理
 
@@ -168,15 +169,17 @@ Car4Web
 
 ---
 
-# 使用技術
+# 使用的應用技術
 
-* Java
-* Swing
-* JDBC
+* 前端 Java Script / 車牌辨識 / Azure API
+* 後端 Java JAX-RS + JDBC
+* session
+* Token
 * MySQL
 * Maven
 * MVC Pattern
 * DAO Pattern
+* SSH
 
 ---
 
