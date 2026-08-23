@@ -1,3 +1,75 @@
+
+
+# 操作流程圖
+
+```mermaid
+graph TD
+%% 節點樣式設定
+classDef startEnd fill:#E1F5FE,stroke:#03A9F4,stroke-width:2px;
+classDef ui fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px;
+classDef decision fill:#FFF3E0,stroke:#FF9800,stroke-width:2px;
+classDef module fill:#F1F8E9,stroke:#7CB342,stroke-width:2px;
+classDef error fill:#FFEBEE,stroke:#EF5350,stroke-width:2px;
+
+%% 1. 主登入流程
+Start([開始 Start]) --> Login[login 登入e社區平台]
+Login --> Check{帳號密碼 正確?}
+Check -- 是 Yes --> Main[住戶/查詢/管理]
+Check -- 否 No --> Fail[顯示登入失敗重新登入]
+Fail --> Relogin{重新登入?}
+Relogin -- 是 Yes --> Login
+Relogin -- 否 No --> End([結束])
+%%=====================================================================
+%% 功能模組區(一)
+Main --> FindResidentByPlate[住戶停車查詢] --> ResidentInf[住戶及停車資訊結果]
+Main --> FindResidentByAddress[住戶停車查詢] --> ResidentInf[住戶及停車資訊結果]
+Main --> FindResidentByParkingNo[住戶停車查詢] --> ResidentInf[住戶及停車資訊結果]
+
+ResidentInf --> UpdateResident[更新住戶登記] 
+ResidentInf --> UpdateVehicle[更新車輛登記]
+ResidentInf --> Admin[超級管理員]
+ResidentInf --> FindAll[批量查詢]
+
+%% 功能模組區(二)
+UpdateResident[更新住戶登記] --> Main
+UpdateVehicle[更新車輛登記] --> Main
+Admin[管理員CRUD] --> AdminCRUD
+FindAll --> FindByLot
+
+%% 功能模組(管理員管理)
+AdminCRUD --> FindAdmin[查詢]
+AdminCRUD --> CreateAdmin[新增] --> SuperAdmin{超級管理員?} 
+AdminCRUD --> UpdateAdmin[更新]
+AdminCRUD --> DeleteAdmin[刪除]
+
+SuperAdmin -- 是[Yes] -->  AddUpdaetAdmin
+SuperAdmin -- 否[No] -->  SuperAdmin
+
+AddUpdaetAdmin -- 新增/更新管理員 --> SuperAdmin 
+
+
+
+%% 功能模組(批量查詢)
+FindByLot --> FindByIO[車輛進出查詢] --> Main
+FindByLot --> FindByParking[停車狀態查詢] --> Main
+FindByLot --> FindByVehicle[車輛登記查詢] --> Main
+FindByLot --> FindByResident[住戶登記查詢] --> Main
+
+%% 返回與結束系統
+Main --> Logout
+ResidentInf --> Logout
+CarProc --> Logout
+ParkProc --> Logout
+
+Logout --> End([結束 End])
+```
+
+
+
+
+
+
+
 # 🚗 e社區-車牌辨識進出管制與住戶資訊一體化
 
 ## 專案介紹
@@ -194,57 +266,9 @@ Car4Web
 
 
 
-# 操作流程圖
-
-```mermaid
-graph TD
-%% 節點樣式設定
-classDef startEnd fill:#E1F5FE,stroke:#03A9F4,stroke-width:2px;
-classDef ui fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px;
-classDef decision fill:#FFF3E0,stroke:#FF9800,stroke-width:2px;
-classDef module fill:#F1F8E9,stroke:#7CB342,stroke-width:2px;
-classDef error fill:#FFEBEE,stroke:#EF5350,stroke-width:2px;
-
-%% 1. 主登入流程
-Start([開始 Start]) --> Login[login 登入e社區平台]
-Login --> Check{帳號密碼 正確?}
-Check -- 是 Yes --> Main[住戶/查詢/管理]
-Check -- 否 No --> Fail[顯示登入失敗重新登入]
-Fail --> Relogin {重新登入}
-Relogin -- 是 Yes --> Login
-Relogin -- 否 No --> End([結束])
-    
- %%=====================================================================
-    #OptionUi --> LoginUi[LoginUi 管理員登入]
 
 
-
-    %% 功能模組區
-    Main --> ResidentUi[ResidentUi 住戶管理]
-    Main --> CarUi[CarRegistrationUi 車輛管理]
-    Main --> ParkingUi[ParkingInformationUi 停車資訊查詢]
-    Main --> AdminregUi[AdminRegistrationUi 管理員]
-
-
-
-
-
-
-
-    %% 子流程執行業務
-    ResidentUi --> ResProc[查詢/修改]
-    CarUi --> CarProc[查詢/刪除/新增]
-    ParkingUi --> ParkProc[依車位/依住戶/依車牌_查詢]
-    AdminregUi --> AdminProc[查詢/修改/刪除/新增]
-    
-    %% 返回與結束系統
-    AdminProc --> Logout
-    ResProc --> Logout
-    CarProc --> Logout
-    ParkProc --> Logout
-    
-    Logout --> End([結束 End])
-
+```
 
     
     %%==進出確認作業===========================================================
