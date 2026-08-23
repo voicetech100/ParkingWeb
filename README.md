@@ -198,30 +198,38 @@ Car4Web
 
 ```mermaid
 graph TD
-    %% 節點樣式設定
-    classDef startEnd fill:#E1F5FE,stroke:#03A9F4,stroke-width:2px;
-    classDef ui fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px;
-    classDef decision fill:#FFF3E0,stroke:#FF9800,stroke-width:2px;
-    classDef module fill:#F1F8E9,stroke:#7CB342,stroke-width:2px;
-    classDef error fill:#FFEBEE,stroke:#EF5350,stroke-width:2px;
+%% 節點樣式設定
+classDef startEnd fill:#E1F5FE,stroke:#03A9F4,stroke-width:2px;
+classDef ui fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px;
+classDef decision fill:#FFF3E0,stroke:#FF9800,stroke-width:2px;
+classDef module fill:#F1F8E9,stroke:#7CB342,stroke-width:2px;
+classDef error fill:#FFEBEE,stroke:#EF5350,stroke-width:2px;
 
-    %% 1. 主登入流程
-    Start([開始 Start]) --> OptionUi[OptionUi 選擇功能]
+%% 1. 主登入流程
+Start([開始 Start]) --> Login[login 登入e社區平台]
+Login --> Check{帳號密碼 正確?}
+Check -- 是 Yes --> Main[住戶/查詢/管理]
+Check -- 否 No --> Fail[顯示登入失敗重新登入]
+Fail --> Relogin {重新登入}
+Relogin -- 是 Yes --> Login
+Relogin -- 否 No --> End([結束])
+    
+ %%=====================================================================
+    #OptionUi --> LoginUi[LoginUi 管理員登入]
 
-    %%=====================================================================
-    OptionUi --> LoginUi[LoginUi 管理員登入]
-    
-    LoginUi --> Check{帳號密碼 正確?}
-    Check -- 否 No --> Fail[顯示登入失敗 請重新登入]
-    Fail --> LoginUi
-    
-    Check -- 是 Yes --> Main[住戶/車輛/登記/查詢/管理]
+
 
     %% 功能模組區
     Main --> ResidentUi[ResidentUi 住戶管理]
     Main --> CarUi[CarRegistrationUi 車輛管理]
     Main --> ParkingUi[ParkingInformationUi 停車資訊查詢]
     Main --> AdminregUi[AdminRegistrationUi 管理員]
+
+
+
+
+
+
 
     %% 子流程執行業務
     ResidentUi --> ResProc[查詢/修改]
