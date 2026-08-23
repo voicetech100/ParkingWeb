@@ -3,9 +3,6 @@
 # 操作流程圖
 
 ```mermaid
-graph TD
-%% 節點樣式設定
-
 
 %% 1. 主登入流程
 Start([開始 Start]) --> Login[login 登入e社區平台]
