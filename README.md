@@ -1,65 +1,82 @@
-
-
-# 操作流程圖
-
-```mermaid
-
+graph TD
+%% ==========================================
 %% 1. 主登入流程
+%% ==========================================
 Start([開始 Start]) --> Login[login 登入e社區平台]
 Login --> Check{帳號密碼 正確?}
-Check -- 是 Yes --> Main [住戶/查詢/管理]
-Check -- 否 No --> Fail [顯示登入失敗重新登入]
+Check -- 是 Yes --> Main[住戶/查詢/管理 主畫面]
+Check -- 否 No --> Fail[顯示登入失敗重新登入]
 
 Fail --> Relogin{重新登入?}
 Relogin -- 是 Yes --> Login
-Relogin -- 否 No --> End([結束])
+Relogin -- 否 No --> End([結束 End])
 
-%%=====================================================================
-%% 功能模組區(一)
-Main --> FindResidentByPlate[住戶停車查詢] --> ResidentInf [住戶及停車資訊結果]
-Main --> FindResidentByAddress[住戶停車查詢] --> ResidentInf [住戶及停車資訊結果]
-Main --> FindResidentByParkingNo[住戶停車查詢] --> ResidentInf [住戶及停車資訊結果]
+%% ==========================================
+%% 2. 住戶停車查詢模組
+%% ==========================================
+Main --> FindResident[住戶停車查詢<br>依車牌/住址/車位號]
+FindResident --> ResidentInf[住戶及停車資訊結果]
 
-ResidentInf --> UpdateResident [更新住戶登記] 
-ResidentInf --> UpdateVehicle [更新車輛登記]
-ResidentInf --> Admin [超級管理員]
-ResidentInf --> FindAll [批量查詢]
+ResidentInf --> UpdateResident[更新住戶登記]
+ResidentInf --> UpdateVehicle[更新車輛登記]
+ResidentInf --> AdminCRUD[管理員 CRUD 功能]
+ResidentInf --> FindAll[批量查詢模組]
 
-%% 功能模組區(二)
-UpdateResident[更新住戶登記] --> Main
-UpdateVehicle[更新車輛登記] --> Main
-Admin[管理員CRUD] --> AdminCRUD
-FindAll --> FindByLot
+UpdateResident --> Main
+UpdateVehicle --> Main
 
-%% 功能模組(管理員管理)
-FindAll --> AdminInf [管理員資訊] --> AdminCRUD --> FindAdmin[查詢] --> AdminInf [管理員資訊]
-FindAll --> AdminInf [管理員資訊] --> AdminCRUD --> CreateAdmin[新增] --> SuperAdmin{超級管理員?} 
-FindAll --> AdminInf [管理員資訊] --> AdminCRUD --> UpdateAdmin[更新] --> AdminInf [管理員資訊]
-FindAll --> AdminInf [管理員資訊] --> AdminCRUD --> DeleteAdmin[刪除] --> AdminInf [管理員資訊]
+%% ==========================================
+%% 3. 管理員管理模組
+%% ==========================================
+FindAll --> AdminInf[管理員資訊畫面]
+AdminInf --> AdminCRUD
 
-SuperAdmin -- 是[Yes] -->  AddUpdaetAdmin
-SuperAdmin -- 否[No] -->  SuperAdmin
+AdminCRUD --> FindAdmin[查詢管理員] --> AdminInf
+AdminCRUD --> CreateAdmin[新增管理員] --> SuperAdmin{操作者為<br>超級管理員?}
+AdminCRUD --> UpdateAdmin[更新管理員] --> AdminInf
+AdminCRUD --> DeleteAdmin[刪除管理員] --> AdminInf
 
-AddUpdaetAdmin -- 新增/更新管理員 --> AdminInf [管理員資訊] 
+SuperAdmin -- 是 Yes --> AddUpdateAdmin[執行 新增/更新] --> AdminInf
+SuperAdmin -- 否 No --> Deny[提示權限不足] --> AdminInf
 
+%% ==========================================
+%% 4. 批量查詢模組
+%% ==========================================
+FindAll --> FindByLot[批次查詢功能]
+FindByLot --> FindByIO[車輛進出查詢] --> Main
+FindByLot --> FindByParking[停車狀態查詢] --> Main
+FindByLot --> FindByVehicle[車輛登記查詢] --> Main
+FindByLot --> FindByResident[住戶登記查詢] --> Main
 
-
-%% 功能模組(批量查詢)
-FindByLot --> FindByIO [車輛進出查詢] --> Main
-FindByLot --> FindByParking [停車狀態查詢] --> Main
-FindByLot --> FindByVehicle [車輛登記查詢] --> Main
-FindByLot --> FindByResident [住戶登記查詢] --> Main
-
-%% 返回與結束系統
-Main --> Logout
+%% ==========================================
+%% 5. 登出與結束
+%% ==========================================
+Main --> Logout[登出系統]
 ResidentInf --> Logout
+Logout --> End
 
+%% ==========================================
+%% 色彩風格定義 (Class Definitions)
+%% ==========================================
+classDef startEnd fill:#E1F5FE,stroke:#0288D1,stroke-width:2px,color:#01579B;
+classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:1.5px,color:#0D47A1;
+classDef subProcess fill:#EDE7F6,stroke:#673AB7,stroke-width:1.5px,color:#311B92;
+classDef condition fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+classDef alert fill:#FFEBEE,stroke:#C62828,stroke-width:1.5px,color:#B71C1C;
+classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:1.5px,color:#1B5E20;
 
-Logout --> End([結束 End])
-```
+%% ==========================================
+%% 套用風格至節點
+%% ==========================================
+class Start,End startEnd;
+class Login,Main,ResidentInf,AdminInf,Logout process;
+class FindResident,UpdateResident,UpdateVehicle,AdminCRUD,FindAll,FindByLot,FindAdmin,CreateAdmin,UpdateAdmin,DeleteAdmin,FindByIO,FindByParking,FindByVehicle,FindByResident subProcess;
+class Check,Relogin,SuperAdmin condition;
+class Fail,Deny alert;
+class AddUpdateAdmin success;
 
-
-
+%% 線條通用樣式（使整體外觀更柔和）
+linkStyle default stroke:#555,stroke-width:1.5px,arrowhead-width:5px;
 
 
 
