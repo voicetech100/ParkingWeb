@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者介面 - 全域查詢系統</title>
+    <!-- 引入 FontAwesome 圖示 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+        }
+        /* 全螢幕背景：莫蘭迪灰藍色 */
+        body {
+            background-color: #dce6f0;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        /* 主容器：最大寬度 1360px，2.5px 深海極藍黑外框 */
+        .container {
+            max-width: 1360px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(17, 34, 51, 0.12);
+            border: 2.5px solid #112233;
+        }
+        
+        /* 頂部核心控制列排版：已移除右側資訊，改為純左側元件排列 */
+        .control-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* 改為向左靠齊 */
+            gap: 15px;
+            padding-bottom: 20px;
+            border-bottom: 3.5px solid #112233;
+        }
+        .left-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+            max-width: 650px;
+        }
+        
+        /* 功能下拉選單樣式 */
+        .select-mode {
+            flex-grow: 1;
+            padding: 8px 16px;
+            font-size: 15px;
+            font-weight: 800;
+            color: #112233;
+            border-radius: 8px;
+            border: 2px solid #112233;
+            background-color: #ffffff;
+            height: 42px;
+            outline: none;
+        }
+        .select-mode:focus {
+            border-color: #2c5270;
+            box-shadow: 0 0 0 3px rgba(44, 82, 112, 0.25);
+        }
+        
+        /* 按鈕樣式 */
+        .btn {
+            padding: 8px 22px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            border: 2px solid #112233;
+            border-radius: 30px;
+            background-color: #ffffff;
+            color: #112233;
+            height: 42px;
+            transition: all 0.1s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover {
+            background-color: #eef7ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 下方動態查詢結果呈現面板 */
+        .result-panel {
+            margin-top: 25px;
+            min-height: 400px;
+            border: 2px dashed #112233;
+            border-radius: 16px;
+            background-color: #eef7ff;
+            padding: 25px;
+        }
+        .placeholder-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 360px;
+            color: #112233;
+            font-weight: 800;
+            font-size: 16px;
+        }
+        
+        /* 報表表格美化樣式 */
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            text-align: center;
+            margin-top: 10px;
+            border: 2px solid #112233;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .report-table th {
+            background-color: #bcd1e3;
+            color: #112233;
+            font-weight: 900;
+            font-size: 15px;
+            padding: 14px 12px;
+            border: 2px solid #112233;
+        }
+        .report-table td {
+            padding: 12px;
+            border: 2px solid #112233;
+            color: #112233;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .report-table tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <h2 style="text-align: center; margin-bottom: 20px;"> e社區一體化查詢 </h2><br>
+    <div class="control-bar">
+        <div class="left-controls">
+            <div>
+                <select id="globalQuerySelect" class="select-mode">
+	                <option value="">請選擇 一項功能!!</option>
+	                <option value="car_status">查詢所有車輛進出狀態</option>
+	                <option value="parking_status">查詢所有車位使用狀態</option>
+	                <option value="car_registration">查詢所有車輛登記資料</option>
+	                <option value="resident_data">查詢所有住戶資料</option>
+         	    </select>
+	            
+	            <select id="queryItemSelect" class="select-mode">
+	                <option value="">請選擇 一項功能!!</option>
+	                <option value="">all</option>
+	                <option value="">ONE-0002</option>
+	            </select>
+            </div>
+            
+				<!-- 💡 關鍵：在外層加上一個 Flex 容器，這能確保所有元件完美並排、不亂折行 -->
+				<div style="display: flex; align-items: center; flex-wrap: nowrap; width: 100%; gap: 10px;">
+				    
+				    <!-- 1. 功能選擇下拉選單 (假設你原本放在最左邊) -->
+				    <!-- (請保留你原本左邊那兩個「請選擇一項功能」的 select 元素) -->
+				
+				    <!-- 2. 日期區塊 (💡 注意：移除原本會強迫換行的外層 div，改用 span 或直接放置) -->
+				    <label for="fromDate" style="margin-left: 10px; white-space: nowrap;">開始日期：</label>
+				    <input type="date" id="fromDate" value="2026-01-01">
+				    
+				    <label for="endDate" style="margin-left: 10px; white-space: nowrap;">結束日期：</label>
+				    <input type="date" id="endDate" value="2026-08-31">
+				
+				    <!-- 3. 按鈕區塊 -->
+				    <button type="button" class="btn" onclick="executeGlobalQuery()">查詢</button>
+				    <a href="manager1.html" class="btn">回首頁</a>
+				
+				    <!-- 4. 使用者資訊區塊 (💡 關鍵：用 margin-left: auto 把它們整組推到最右邊) -->
+				    <div style="margin-left: auto; display: flex; align-items: center; gap: 15px; white-space: nowrap; padding-left: 20px;">
+				        <label id="loginuser" style="font-weight: bold;">登入帳號：</label>
+				    </div>
+				
+				</div>
+				
+        </div>
+        
+    </div>
+
+    <!-- 下方動態報表輸出面板 -->
+    <div id="queryResultArea" class="result-panel">
+        <div class="placeholder-text">
+            請在上方大選單選擇功能，並點擊「查詢」按鈕獲取資料庫全域報表。
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+
+const token = localStorage.getItem("my_api_token");    
+//const API_BASE_URL = 'http://localhost:8080/MyHomework0803/api/hello';
+const API_BASE_URL = sessionStorage.getItem('API_BASE');
+document.getElementById("loginuser").innerHTML =  "登入帳號: " + sessionStorage.getItem('account') + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "等級: " + sessionStorage.getItem('class1');
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // 監聽上方主選單的變動事件
+    document.getElementById('globalQuerySelect').addEventListener('change', function() {
+        
+    	const selectedValue = this.value;
+        const subSelect = document.getElementById('queryItemSelect');
+        
+        // 每次上方改變時，先重設下方選單，顯示預設提示
+        subSelect.innerHTML = '<option value="">請選擇 一項功能!!</option>';
+        if (selectedValue === 'car_status') {
+            subSelect.innerHTML = '<option value="">車號載入中...</option>';
+	        fetch(`${API_BASE_URL}/getallcarregistration`,{
+					method: 'GET',
+					headers: { 
+						'Authorization': `Bearer ${token}` 
+					}
+	        	})
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('無法取得車輛登記資料');
+                    }
+                    return response.json(); 
+                })
+                .then(resData => {
+                    // 【修正】移除原有的「請選擇...」與「全部」，改為最上方只有小寫的 "all"
+                    subSelect.innerHTML = '<option value="all">all</option>';
+                    
+                    // 檢查後端回傳的 data 陣列是否存在且有資料
+                    if (resData && Array.isArray(resData.data) && resData.data.length > 0) {
+                        // 使用迴圈遍歷每一筆車輛資料
+                        resData.data.forEach(car => {
+                            // 確保該筆資料有車號欄位
+                            if (car.licensePlateNumber) {
+                                // 建立一個新的 <option> 標籤
+                                const option = document.createElement('option');
+                                // 設定 option 的 value 值
+                                option.value = car.licensePlateNumber;
+                                // 設定畫面上顯示的文字
+                                option.innerText = `${car.licensePlateNumber}`; // (${car.carUser || '未知車主'})`;  //🚗 
+                                // 將這個新選項塞進下方的下拉選單中
+                                subSelect.appendChild(option);
+                            }
+                        });
+                        
+                    } else {
+                        // 如果查無資料，維持原本的行為或您也可以根據需求調整
+                        subSelect.innerHTML = '<option value="all">all</option><option value="">⚠️ 查無任何車輛登記資料</option>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching car data:', error);
+                    subSelect.innerHTML = '<option value="all">all</option><option value="">❌ 資料連線失敗，請重試</option>';
+                });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//🧠 核心功能：當管理員點擊「查詢」時，根據選單項目發動對應的資料渲染
+function executeGlobalQuery() {
+ fetch(`${API_BASE_URL}/getsession`,{
+		method: 'GET',
+		headers: { 
+			'Authorization': `Bearer ${token}` 
+		}
+	})
+ .then(res => {
+     if (!res.ok) throw new Error('無法連線至伺服器或認證失敗Server');
+     return res.json(); 
+ })
+ .then(() => {
+     const selectElement = document.getElementById('globalQuerySelect');
+     const selectedValue = selectElement.value;
+     const selectedText = selectElement.options[selectElement.selectedIndex].text;
+     const resultArea = document.getElementById('queryResultArea');
+     
+     if (selectedValue === "") {
+         alert("請先選擇您要進行的全域查詢功能選項！");
+         return;
+     }
+                 
+     // 1. 顯示動態讀取中狀態
+     resultArea.innerHTML = `
+         <div class="placeholder-text" style="color: #007bff; font-weight: bold;">
+             正在從 Java 後端核心安全載入【${selectedText}】最新數據，請稍候...
+         </div>
+     `;
+     
+     if (selectedValue === "car_status") {  //車輛進出狀態
+    	  
+         const fromDate = document.getElementById('fromDate').value;
+         const endDate = document.getElementById('endDate').value;
+         const queryItemSelect = document.getElementById('queryItemSelect').options[document.getElementById('queryItemSelect').selectedIndex].text;
+         
+         // 簡單防呆
+         if (!fromDate || !endDate || !queryItemSelect) {
+             alert('❌ 請完整填寫開始日期、結束日期與車牌號碼！');
+             resultArea.innerHTML = '';
+             return;
+         }
+         
+         const targetUrl = `${API_BASE_URL}/getEntryExit/${fromDate}/${endDate}/${queryItemSelect}`;
+         fetch(targetUrl,{
+				method: 'GET',
+				headers: { 
+					'Authorization': `Bearer ${token}` 
+				}
+        	})
+         .then(res => {
+             if (res.ok) return res.json();
+             throw new Error('查無資料或伺服器異常');
+         })
+         .then(dataList => {
+             // 模擬 0.4 秒的極速資料庫加載效果
+             setTimeout(() => {
+                 let tableContent = `
+                     <h3 style="margin-top: 0; color: #004d40; border-bottom: 2px solid #b2dfdb; padding-bottom: 8px;">
+                         📊 系統即時動態報表：${selectedText}
+                     </h3>
+                     <table class="report-table" border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+                         <thead>
+                             <tr style="background-color: #f2f2f2;">
+                                 <th>時間</th>
+                                 <th>車號</th>
+                                 <th>使用者</th>
+                                 <th>使用者電話</th>
+                                 <th>進出狀態</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                 `;
+
+                 // 💡 修正 5：不再寫死資料，直接跑迴圈去讀取後端傳回的最新 JSON 陣列
+                 dataList.forEach(item => {
+                     const statusSpan = item.entryExit === 'Entry' 
+                         ? '<span style="color:green; font-weight:bold;">已進場 (Entry)</span>' 
+                         : '<span style="color:blue; font-weight:bold;">已出場 (Exit)</span>';
+
+                     tableContent += `
+                         <tr>
+                             <td>${item.date}</td>
+                             <td>${item.licensePlateNumber}</td>
+                             <td>${item.carUser}</td>
+                             <td>${item.carUserPhone}</td>
+                             <td>${statusSpan}</td>
+                         </tr>
+                     `;
+                 });
+
+                 tableContent += `
+                         </tbody>
+                     </table>
+                 `;
+
+                 resultArea.innerHTML = tableContent;
+             }, 400); 
+         })
+         .catch(err => {
+             resultArea.innerHTML = `<div style="color:red; font-weight:bold;">查詢失敗：${err.message}</div>`;
+         });
+     }
+
+     
+     //==================================================
+     else if (selectedValue === "parking_status"){    //車位使用狀態
+    	    //http://localhost:8080/MyHomework0803/api/hello/getallresidentparking
+    	    const targetUrl = `${API_BASE_URL}/getallresidentparking`;
+    	    fetch(targetUrl,{
+				method: 'GET',
+				headers: { 
+					'Authorization': `Bearer ${token}` 
+				}
+        	})
+    	    .then(res => {
+    	        if (res.ok) return res.json();
+    	        throw new Error('查無資料或伺服器異常');
+    	    })
+    	    .then(resObj => { 
+    	        // 安全取出 data 陣列
+    	        const list = resObj && resObj.data ? resObj.data : [];
+
+    	        setTimeout(() => {
+    	            let tableContent = `
+    	            <h3 style="margin-top: 0; color: #004d40; border-bottom: 2px solid #b2dfdb; padding-bottom: 8px;">
+    	                📊 系統即時動態報表：${selectedText}
+    	            </h3>
+    	            <table class="report-table" border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+    	                <thead>
+    	                    <tr style="background-color: #f2f2f2;">
+    	                        <th>住戶</th>
+    	                        <th>車位</th>
+    	                        <th>車號</th>
+    	                        <th>擁有人</th>
+    	                        <th>擁有人電話</th>
+    	                        <th>使用者</th>
+    	                        <th>使用者電話</th>
+    	                        <th>停車狀態</th>
+    	                    </tr>
+    	                </thead>
+    	                <tbody>
+    	            `;
+
+    	            // 若無資料則顯示提示 (注意：因為增加了 2 個欄位，這裡 colspan 要改成 8)
+    	            if (list.length === 0) {
+    	                tableContent += `
+    	                    <tr>
+    	                        <td colspan="8" style="padding: 20px; color: #999;">系統暫無相關即時資料</td>
+    	                    </tr>
+    	                `;
+    	            } else {
+    	                list.forEach(item => {
+    	                    // 判斷停車狀態
+    	                    const statusSpan = item.occupiedAvailable === 'Inside' 
+    	                        ? '<span style="color:green; font-weight:bold;">已進場 (Inside)</span>' 
+    	                        : '<span style="color:blue; font-weight:bold;">已出場 (Exit)</span>';
+
+    	                    // 處理使用者與電話為 null 時的預備方案
+    	                    const user = item.parkingSpaceUser || item.carUser || '無';
+    	                    const phone = item.parkingSpaceUserPhone || item.carUserPhone || '無';
+
+    	                    // 組合車位顯示文字 (格式：[B1] C0101)
+    	                    const spaceInfo = item.parkingSpaceNumber 
+    	                        ? `[${item.parkingSpaceFloor || ''}] ${item.parkingSpaceNumber}`
+    	                        : '無車位';
+
+    	                    tableContent += `
+    	                        <tr>
+    	                            <td>${item.addressSimple || ''}</td>
+    	                            <td>${spaceInfo}</td>
+    	                            <td>${item.licensePlateNumber || '無車號'}</td>
+    	                            <td>${item.parkingSpaceOwner || ''}</td>
+    	                            <td>${item.parkingSpaceOwnerPhone || ''}</td>
+    	                            <td>${user}</td>
+    	                            <td>${phone}</td>
+    	                            <td>${statusSpan}</td>
+    	                        </tr>
+    	                    `;
+    	                });
+    	            }
+
+    	            tableContent += `
+    	                </tbody>
+    	            </table>
+    	            `;
+    	            
+    	            resultArea.innerHTML = tableContent;
+    	        }, 400);
+    	    })
+    	    .catch(err => {
+    	        resultArea.innerHTML = `<div style="color:red; font-weight:bold;">查詢失敗：${err.message}</div>`;
+    	    });
+    	}
+
+    	 
+    	 
+    	 
+    	 
+    	 
+    	 
+     
+     //===================================================
+       else if (selectedValue === "car_registration"){  //車輛登記資料
+    	    //    http://localhost:8080/MyHomework0803/api/hello/getallcarregistration
+    	    const targetUrl = `${API_BASE_URL}/getallcarregistration`;
+    	    fetch(targetUrl,{
+				method: 'GET',
+				headers: { 
+					'Authorization': `Bearer ${token}` 
+				}
+        	})
+    	    .then(res => {
+    	        if (res.ok) return res.json();
+    	        throw new Error('查無資料或伺服器異常');
+    	    })
+    	    .then(resObj => { 
+    	        // 安全取出 data 陣列
+    	        const list = resObj && resObj.data ? resObj.data : [];
+
+    	        setTimeout(() => {
+    	            let tableContent = `
+    	            <h3 style="margin-top: 0; color: #004d40; border-bottom: 2px solid #b2dfdb; padding-bottom: 8px;">
+    	                📊 系統即時動態報表：${selectedText}
+    	            </h3>
+    	            <table class="report-table" border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+    	                <thead>
+    	                    <tr style="background-color: #f2f2f2;">
+    	                        <th>住戶</th>
+    	                        <th>車號</th>
+    	                        <th>使用者</th>
+    	                        <th>使用者電話</th>
+    	                        <th>登記日期</th>
+    	                    </tr>
+    	                </thead>
+    	                <tbody>
+    	            `;
+
+    	            // 💡 修正 1：欄位只有 5 個，無資料時的 colspan 改成 5
+    	            if (list.length === 0) {
+    	                tableContent += `
+    	                    <tr>
+    	                        <td colspan="5" style="padding: 20px; color: #999;">系統暫無相關即時資料</td>
+    	                    </tr>
+    	                `;
+    	            } else {
+    	                list.forEach(item => {
+    	                    // 💡 修正 2：嚴格對照表頭 5 個欄位，並對應新 JSON 欄位名稱
+    	                    const resident = item.addressSimple || '未填寫';
+    	                    const plateNumber = item.licensePlateNumber || '無車號';
+    	                    const user = item.carUser || '無';
+    	                    const phone = item.carUserPhone || '無';
+    	                    const regDate = item.carRegistrationDate || '無紀錄';
+
+    	                    tableContent += `
+    	                        <tr>
+    	                            <td>${resident}</td>
+    	                            <td>${plateNumber}</td>
+    	                            <td>${user}</td>
+    	                            <td>${phone}</td>
+    	                            <td>${regDate}</td>
+    	                        </tr>
+    	                    `;
+    	                });
+    	            }
+
+    	            tableContent += `
+    	                </tbody>
+    	            </table>
+    	            `;
+    	            
+    	            resultArea.innerHTML = tableContent;
+    	        }, 400);
+    	    })
+    	    .catch(err => {
+    	        resultArea.innerHTML = `<div style="color:red; font-weight:bold;">查詢失敗：${err.message}</div>`;
+    	    });
+    	}
+
+    	 
+    	 
+    	 
+    	 
+    	 
+    	 
+    	 
+     //===================================================
+       else if (selectedValue === "resident_data"){
+    	    //http://localhost:8080/MyHomework0803/api/hello/getallresidentbylot   
+    	    const targetUrl = `${API_BASE_URL}/getallresidentbylot`;
+    	    fetch(targetUrl,{
+				method: 'GET',
+				headers: { 
+					'Authorization': `Bearer ${token}` 
+				}
+        	})
+    	    .then(res => {
+    	        if (res.ok) return res.json();
+    	        throw new Error('查無資料或伺服器異常');
+    	    })
+    	    .then(resObj => { 
+    	        // 安全取出 data 陣列
+    	        const list = resObj && resObj.data ? resObj.data : [];
+
+    	        setTimeout(() => {
+    	            let tableContent = `
+    	            <h3 style="margin-top: 0; color: #004d40; border-bottom: 2px solid #b2dfdb; padding-bottom: 8px;">
+    	                📊 系統即時動態報表：${selectedText}
+    	            </h3>
+    	            <table class="report-table" border="1" style="width:100%; border-collapse: collapse; text-align: center;">
+    	                <thead>
+    	                    <tr style="background-color: #f2f2f2;">
+    	                        <th>住戶</th>
+    	                        <th>樓層</th>
+    	                        <th>車位</th>
+    	                        <th>擁有人</th>
+    	                        <th>擁有人電話</th>
+    	                        <th>建立日期</th>
+    	                        <th>更新日期</th>
+    	                    </tr>
+    	                </thead>
+    	                <tbody>
+    	            `;
+
+    	            // 💡 修正 1：現在總共 7 個欄位，無資料時的 colspan 改成 7
+    	            if (list.length === 0) {
+    	                tableContent += `
+    	                    <tr>
+    	                        <td colspan="7" style="padding: 20px; color: #999;">系統暫無相關即時資料</td>
+    	                    </tr>
+    	                `;
+    	            } else {
+    	                list.forEach(item => {
+    	                    // 💡 修正 2：精準對應新欄位變數
+    	                    const simpleAddress = item.addressSimple || '未填寫';
+    	                    const floor = item.parkingSpaceFloor || '無';
+    	                    const spaceNumber = item.parkingSpaceNumber || '無車位';
+    	                    const owner = item.parkingSpaceOwner || '無';
+    	                    const ownerPhone = item.parkingSpaceOwnerPhone || '無';
+    	                    const cDate = item.createDate || '無紀錄';
+    	                    const uDate = item.updateDate || '無紀錄';
+
+    	                    tableContent += `
+    	                        <tr>
+    	                            <td>${simpleAddress}</td>
+    	                            <td>${floor}</td>
+    	                            <td>${spaceNumber}</td>
+    	                            <td>${owner}</td>
+    	                            <td>${ownerPhone}</td>
+    	                            <td>${cDate}</td>
+    	                            <td>${uDate}</td>
+    	                        </tr>
+    	                    `;
+    	                });
+    	            }
+
+    	            tableContent += `
+    	                </tbody>
+    	            </table>
+    	            `;
+    	            
+    	            resultArea.innerHTML = tableContent;
+    	        }, 400);
+    	    })
+    	    .catch(err => {
+    	        resultArea.innerHTML = `<div style="color:red; font-weight:bold;">查詢失敗：${err.message}</div>`;
+    	    });
+    	}
+
+
+     	 
+     //===================================================
+     else{}
+     
+     
+     
+     
+     
+ })
+ .catch(err => {
+     alert('連線失敗：' + err.message);
+ });
+}
+
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>停車場出口</title>
+    <style>
+        /* 加入拖曳區塊簡單的樣式 */
+        .drag-box {
+            width: 400px;
+            height: 300px;
+            background: #eee;
+            border: 2px dashed #bbb;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: top;
+            margin-left: 20px;
+            position: relative;
+        }
+        .drag-box.dragover {
+            border-color: #28a745;
+            background-color: #e8f5e9;
+        }
+        #mockImg {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+        /* 簡單的狀態提示樣式 */
+        .status-msg {
+            margin-top: 15px;
+            padding: 8px;
+            width: 900px; /*顯示段寬度*/
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>停車場出口</h1>  <h2>Java JAX-RS相機拍照上傳（含拖曳自動上傳）</h2>
+    <!-- 左側：Video 標籤 -->
+    <video id="video" width="400" height="300" autoplay playsinline style="background:#ccc;"></video>
+    
+    <!-- 右側：拖曳模擬區 -->
+    <div id="dropZone" class="drag-box">
+        <span id="dropText">或拖曳圖片到這裡自動上傳</span>
+        <img id="mockImg" alt="模擬相片">
+    </div>
+    
+    <br>
+    
+    <!-- 左側按鈕 -->
+    <button id="captureBtn">點擊：拍照並傳送給 Java 後端</button>
+    <!-- 右側檔案選取器 -->
+    <input type="file" id="fileInput" accept="image/*" style="margin-left: 226px;">
+    <!-- 狀態看板取代會干擾操作的alert -->
+    <div class="status-msg">
+        <div><strong>上傳來源：</strong><span id="uploadSource">無</span></div>
+        <div><strong>目前狀態：</strong><span id="uploadStatus">等待操作...</span></div>
+        <div id="resultDetails" style="margin-top: 5px; white-space: pre-line; color: green; font-weight: bold;"></div>
+    </div>
+
+    <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+
+    <script>
+		const video = document.getElementById('video');
+		const canvas = document.getElementById('canvas');
+		const captureBtn = document.getElementById('captureBtn');
+		
+		// --- 這裡新增需要控制元件 ---
+		const dropZone = document.getElementById('dropZone');
+		const dropText = document.getElementById('dropText');
+		const mockImg = document.getElementById('mockImg');
+		const fileInput = document.getElementById('fileInput');
+		const uploadSource = document.getElementById('uploadSource');
+		const uploadStatus = document.getElementById('uploadStatus');
+		const resultDetails = document.getElementById('resultDetails');
+		
+		const API_BASE = sessionStorage.getItem('API_BASEp');
+		//const API_BASE = "http://localhost:8080/parkingweb/api";
+		
+        // 【核心上傳函式】將原本fetch的邏輯抽出，讓相機跟拖曳共用
+        function sendBlobToServer(blob, sourceName) {
+            uploadSource.innerText = sourceName;
+            uploadStatus.innerText = "正在傳送給 Java 後端...";
+            resultDetails.innerHTML = ""; // 改為 innerHTML 以便後續做樣式清除
+            
+            const formData = new FormData();
+            formData.append('photo', blob, 'test_camera.jpg');
+	
+            // 使用原本程式碼中的fetch寫法
+            fetch( API_BASE +'/exit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(async (response) => {
+                if (response.status === 201) {
+                    const result = await response.json();
+                    uploadStatus.innerText = "上傳成功！";
+                    //resultDetails.innerHTML = `🚗 <strong style="color: #007bff; font-size: 16px;">辨識車牌: ${result.license_plate || "未識別出車牌"}</strong>
+                    //    🔔 <span style="color: #dc3545; font-size: 15px; font-weight: bold;">門禁系統: ${result.EntryMsg || "無系統訊息"}</span>
+                    //	🆔 照片 ID: ${result.id}
+                    //	🔗 資源網址: ${result.resource_url}`;
+                    	
+                    
+                   	resultDetails.innerHTML = `🚗 <strong style="color: #007bff; font-size: 16px;">辨識車牌: ${result.license_plate || "未識別出車牌"}</strong>
+                        🔔 <span style="color: #dc3545; font-size: 15px; font-weight: bold;">門禁系統: ${result.EntryMsg || "無系統訊息"}</span>`;
+                    
+                    	
+                    	
+                    	
+                    	
+                    	console.log("後端回傳：", result);
+                } else {
+                    uploadStatus.innerText = `上傳失敗，HTTP 狀態碼: ${response.status}`;
+                }
+            })
+            .catch((error) => {
+                uploadStatus.innerText = "連線失敗，請檢查 Java 後端是否啟動，或是否有跨網域 (CORS) 問題。";
+            });
+        }
+
+        // 1. 啟動相機
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                alert("相機啟動失敗，請檢查權限或是否使用 localhost 開啟。");
+            });
+
+        // 2. 拍照與REST請求(改為呼叫共用上傳函式）
+        captureBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+                sendBlobToServer(blob, "實體相機拍照");
+            }, 'image/jpeg');
+        });
+
+        // 3. 處理拖曳與選取的檔案（解鎖解析度限制）
+        function handleImageFile(file) {
+            if (!file || !file.type || !file.type.startsWith('image/')) {
+                uploadStatus.innerText = "請選取正確的圖片檔案！";
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                mockImg.src = e.target.result;
+                mockImg.style.display = 'block';
+                dropText.style.display = 'none';
+                
+                // 圖片載入完成，動態調整Canvas大小再送出
+                mockImg.onload = () => {
+                    const context = canvas.getContext('2d');
+                    
+                    // 關鍵修正：讓隱藏的Canvas寬高直接等於圖片「原本的真實解析度」
+                    // 不強行壓縮成 400x300！
+                    canvas.width = mockImg.naturalWidth;
+                    canvas.height = mockImg.naturalHeight;
+                    // 以原圖大小繪製
+                    context.drawImage(mockImg, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob((blob) => {
+                        sendBlobToServer(blob, "拖曳/選取模擬");
+                    }, 'image/jpeg');
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 4. 拖曳效果事件監聽
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            // 📍 關鍵錯誤修正：明確抓取拖曳檔案陣列的第0個檔案
+            const file = e.dataTransfer.files[0]; 
+            handleImageFile(file);
+        });
+
+        // 5. 傳統點擊選取檔案監聽
+        fileInput.addEventListener('change', (e) => {
+            // 📍 關鍵錯誤修正：明確抓取選取檔案陣列的第 0 個檔案
+            const file = e.target.files[0]; 
+            handleImageFile(file);
+        });
+    </script>
+
+</body>
+
+</html>

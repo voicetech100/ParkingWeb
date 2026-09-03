@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e化查詢平台 - 管理者登入</title>
+    <style>
+        /* 全域重設與流暢美學背景 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column; /* 讓標題與卡片由上至下排列 */
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            gap: 40px; /* 標題與下方卡片的間距 */
+        }
+
+        /* 裝飾性感微光背景圓圈 */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.05);
+            z-index: 0;
+            filter: blur(40px);
+        }
+        body::before { top: -10%; left: -10%; }
+        body::after { bottom: -10%; right: -10%; }
+
+        /* 網頁大標題：完全獨立於網頁頂端 */
+        .platform-title {
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            font-size: 38px; /* 放大字體 */
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-align: center;
+            /* 科技感文字陰影 */
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 25px rgba(59, 130, 246, 0.5);
+        }
+
+        /* 雙欄主容器 */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            width: 760px;
+            transition: transform 0.3s ease;
+        }
+
+        .main-wrapper:hover {
+            transform: translateY(-3px);
+        }
+
+        /* 左側欄：登入區塊 */
+        .login-section {
+            flex: 1;
+            padding: 45px 40px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .login-section h3 {
+            color: #1e3a8a;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 輸入群組 */
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #334155;
+            background-color: #f8fafc;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        /* 登入按鈕 */
+        .btn-group {
+            margin-top: 22px;
+        }
+
+        .btn-group button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+            letter-spacing: 2px;
+        }
+
+        .btn-group button:hover {
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            opacity: 0.95;
+        }
+
+        .btn-group button:active {
+            transform: scale(0.98);
+        }
+
+        /* 右側欄：功能快捷鈕區塊 */
+        .links-section {
+            flex: 1;
+            background-color: #f8fafc;
+            padding: 45px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .links-section h4 {
+            color: #475569;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* 快捷網頁按鈕樣式 */
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 16px 20px;
+            margin-bottom: 15px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            color: #1e293b;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .nav-btn .icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .nav-btn .arrow {
+            transition: transform 0.3s ease;
+            color: #94a3b8;
+        }
+
+        .nav-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.03);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.08);
+            transform: translateX(4px);
+        }
+
+        .nav-btn:hover .arrow {
+            transform: translateX(5px);
+            color: #3b82f6;
+        }
+
+        /* 訊息提示區 */
+        .msg-text {
+            min-height: 20px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 網頁獨立大標題 -->
+<h1 class="platform-title">💻 幸福社區 e化查詢平台</h1>
+
+<!-- 主區塊容器 -->
+<div class="main-wrapper">
+
+    <!-- 左側：管理者登入 -->
+    <div class="login-section">
+        <h3>👤 管理者登入</h3>
+        
+        <div class="input-group">
+            <label for="username">管理員帳號</label>
+            <input type="text" id="username" autocomplete="off" placeholder="請輸入帳號">
+        </div>
+        <div class="input-group">
+            <label for="password">安全密碼</label>
+            <input type="password" id="password" placeholder="請輸入密碼">
+        </div>
+        
+        <div class="btn-group">
+            <button type="button" onclick="submitLogin()">確認登入</button>
+        </div>
+
+        <div id="status-box" class="msg-text"></div>
+    </div>
+
+    <!-- 右側：停車場快速連結門戶 -->
+    <div class="links-section">
+        <h4>🚗 停車場系統快速通道</h4>
+        
+        <!-- 🔗 請將下方 href 替換為真實網址 -->
+        <a href="entry.html" class="nav-btn" >
+            <span><span class="icon">🛫</span>停車場入口網頁</span>
+            <span class="arrow">➔</span>
+        </a>
+        
+        <a href="exit.html" class="nav-btn" >
+            <span><span class="icon">🛬</span>停車場出口網頁</span>
+            <span class="arrow">➔</span>
+        </a>
+        <!-- target="_blank超連結的寫法會導致sessionStorage變成 null。在HTML中，target="_blank"會強迫瀏覽器「開啟新分頁」來打開 entry.html。sessionStorage無法跨越到全新開啟的分頁，所以新分頁一讀取就會彈出 null。 -->
+    </div>
+</div>
+
+<script>
+
+const API_BASE = 'http://localhost:8080/parkingweb/api/hello';
+const API_BASEp = 'http://localhost:8080/parkingweb/api';
+sessionStorage.setItem('API_BASEp', API_BASEp); //API基本路徑
+
+
+function submitLogin() {
+	const userField = document.getElementById('username').value;
+    const passField = document.getElementById('password').value;
+    const statusBox = document.getElementById('status-box');
+    
+    statusBox.innerText = "";
+    statusBox.style.color = "#ef4444";
+
+    if (!userField || !passField) {
+        statusBox.innerText = "⚠️ 請輸入帳號與密碼！";
+        return;
+    }
+
+    const loginPayload = {  //要傳送後端的資料
+        account: userField,
+        password: passField
+    };
+
+    statusBox.style.color = "#3b82f6";
+    statusBox.innerText = "連線中...";
+
+    //alert(API_BASE+'/login');
+    // 登入請求
+    fetch( API_BASE+'/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginPayload)
+        
+    })
+    .then(response => {
+    // 3. 處理後端失敗狀態：JAX-RS回傳BAD_REQUES(400)時，一樣解析 JSON 資料
+        if (!response.ok && response.status !== 400) {
+            throw new Error('網路異常');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // 4. 根據後端JSON {"success": true, ...} 進行判斷
+        if (data && data.success === true) {
+        	statusBox.style.color = "#10b981";
+            statusBox.innerText = "✓ 登入成功！正在跳轉...";
+            //alert("登入成功,後端傳過來的Token:\t"+data.token)
+            console.log("登入成功,後端傳過來的Token:\t"+data.token)
+            localStorage.setItem("my_api_token", data.token);  //localStorage.setItem覽器系統內建的不需要宣告！
+         
+			sessionStorage.setItem('account', data.data[0].account); //user帳戶
+            sessionStorage.setItem('class1', data.data[0].class1); //user等級
+            sessionStorage.setItem('API_BASE', API_BASE); //API基本路徑
+            // 驗證成功跳轉下一頁面
+            window.location.href = 'manager1.html'; 
+        } else {
+            statusBox.style.color = "#ef4444";
+            statusBox.innerText = "❌ 帳號或密碼錯誤！";
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusBox.style.color = "#ef4444";
+        statusBox.innerText = "⚠️ 系統連線異常，請稍後再試。";
+    });
+}
+
+</script>
+
+</body>
+
+</html>
+
