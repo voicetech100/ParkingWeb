@@ -1,347 +1,302 @@
-graph TD
-%% ==========================================
-%% 1. 主登入流程
-%% ==========================================
-Start([開始 Start]) --> Login[login 登入e社區平台]
-Login --> Check{帳號密碼 正確?}
-Check -- 是 Yes --> Main[住戶/查詢/管理 主畫面]
-Check -- 否 No --> Fail[顯示登入失敗重新登入]
+<div style="text-align: center; width: 100%;"><span style="color:#1F4E79;font-size:3em;font-weight:bold;">e居家</span></div>
 
-Fail --> Relogin{重新登入?}
-Relogin -- 是 Yes --> Login
-Relogin -- 否 No --> End([結束 End])
+<div style="text-align: center; width: 100%;"><span style="color:#1F4E79;font-size:2em;font-weight:bold;">社區停車場智慧進出管理系統設計報告</span></div>
 
-%% ==========================================
-%% 2. 住戶停車查詢模組
-%% ==========================================
-Main --> FindResident[住戶停車查詢<br>依車牌/住址/車位號]
-FindResident --> ResidentInf[住戶及停車資訊結果]
-
-ResidentInf --> UpdateResident[更新住戶登記]
-ResidentInf --> UpdateVehicle[更新車輛登記]
-ResidentInf --> AdminCRUD[管理員 CRUD 功能]
-ResidentInf --> FindAll[批量查詢模組]
-
-UpdateResident --> Main
-UpdateVehicle --> Main
-
-%% ==========================================
-%% 3. 管理員管理模組
-%% ==========================================
-FindAll --> AdminInf[管理員資訊畫面]
-AdminInf --> AdminCRUD
-
-AdminCRUD --> FindAdmin[查詢管理員] --> AdminInf
-AdminCRUD --> CreateAdmin[新增管理員] --> SuperAdmin{操作者為<br>超級管理員?}
-AdminCRUD --> UpdateAdmin[更新管理員] --> AdminInf
-AdminCRUD --> DeleteAdmin[刪除管理員] --> AdminInf
-
-SuperAdmin -- 是 Yes --> AddUpdateAdmin[執行 新增/更新] --> AdminInf
-SuperAdmin -- 否 No --> Deny[提示權限不足] --> AdminInf
-
-%% ==========================================
-%% 4. 批量查詢模組
-%% ==========================================
-FindAll --> FindByLot[批次查詢功能]
-FindByLot --> FindByIO[車輛進出查詢] --> Main
-FindByLot --> FindByParking[停車狀態查詢] --> Main
-FindByLot --> FindByVehicle[車輛登記查詢] --> Main
-FindByLot --> FindByResident[住戶登記查詢] --> Main
-
-%% ==========================================
-%% 5. 登出與結束
-%% ==========================================
-Main --> Logout[登出系統]
-ResidentInf --> Logout
-Logout --> End
-
-%% ==========================================
-%% 色彩風格定義 (Class Definitions)
-%% ==========================================
-classDef startEnd fill:#E1F5FE,stroke:#0288D1,stroke-width:2px,color:#01579B;
-classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:1.5px,color:#0D47A1;
-classDef subProcess fill:#EDE7F6,stroke:#673AB7,stroke-width:1.5px,color:#311B92;
-classDef condition fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
-classDef alert fill:#FFEBEE,stroke:#C62828,stroke-width:1.5px,color:#B71C1C;
-classDef success fill:#E8F5E9,stroke:#2E7D32,stroke-width:1.5px,color:#1B5E20;
-
-%% ==========================================
-%% 套用風格至節點
-%% ==========================================
-class Start,End startEnd;
-class Login,Main,ResidentInf,AdminInf,Logout process;
-class FindResident,UpdateResident,UpdateVehicle,AdminCRUD,FindAll,FindByLot,FindAdmin,CreateAdmin,UpdateAdmin,DeleteAdmin,FindByIO,FindByParking,FindByVehicle,FindByResident subProcess;
-class Check,Relogin,SuperAdmin condition;
-class Fail,Deny alert;
-class AddUpdateAdmin success;
-
-%% 線條通用樣式（使整體外觀更柔和）
-linkStyle default stroke:#555,stroke-width:1.5px,arrowhead-width:5px;
-
-
-
-
-# 🚗 e社區-車牌辨識進出管制與住戶資訊一體化
-
-## 專案介紹
-
-Car4Web為一套使用 Java 開發的社區停車管理系統，採用 MVC 分層架構與 DAO Pattern，並以 MySQL 作為資料庫。
-
-系統提供管理員維護社區住戶、車輛、停車位及車輛進出資料，讓社區停車資訊能集中管理與快速查詢。
+|          |                                                                               |
+| -------- | ----------------------------------------------------------------------------- |
+| 專案路徑 | `\\192.168.137.142\Qsync\ocp20260902`                                         |
+| 專案名稱 | ParkingWeb（社區停車場進出管理系統）                                          |
+| 報告日期 | 2026-09-02                                                                    |
+| 系統定位 | 社區（住宅大樓）停車場之車牌辨識、進出授權、停車管理與後台管理的 Web 應用系統 |
 
 ---
 
-# 系統特色
+## 目錄
 
-* Java Swing 圖形化介面
-* MVC 分層架構
-* DAO Pattern
-* JDBC 資料存取
-* MySQL 資料庫
-* Maven 專案管理
-* Eclipse + WindowBuilder 開發
-
----
-
-# 開發環境
-
-| 項目         | 版本            |
-| ---------- | ------------- |
-| Java       | JDK 21        |
-| IDE        | Eclipse       |
-| GUI        | Web |
-| Build Tool | Maven         |
-| Database   | MySQL 8.0     |
+1. [專案概述](#1-專案概述)
+2. [需求分析](#2-需求分析-requirements)
+3. [規格說明](#3-規格說明-specifications)
+4. [流程圖](#4-流程圖-flowcharts)
+5. [安全機制](#5-安全機制)
+6. [結語](#6-結語)
 
 ---
 
-# 系統架構
+## <span style="color:#1F4E79;">▍</span> 1. 專案概述
 
-```text
+本系統是一套以 **車牌辨識 (License Plate Recognition, LPR)** 為核心的社區停車場管理系統，提供：
 
-UI (Web)
-    │
-    ▼
-Controller
-    │
-    ▼
-Service
-    │
-    ▼
-DAO
-    │
-    ▼
-Model
-
-
-```
-
----
-
-# 專案目錄
-
-```text
-Car4Web
-├── src/main/java
-│      ├── config
-│      ├── controller
-│      ├── service
-│      ├── dao
-│      ├── model
-│      ├── util
-│      ├── view
-├── pom.xml
-└── README.md
-```
-
----
-
-# 功能介紹
-
-## 系統登入
-
-* 主功能選單
-* 社區車輛進出車牌識別 
-* 社區管理員登入
-* 
-
-## 管理員管理
-
-* 管理員資料維護
-* 管理員資料查詢
-
-## 住戶管理
-
-* 查詢住戶資料
-* 更新住戶資料
-
-## 車輛管理
-
-* 車輛登記
-* 車輛資料維護
-* 車牌查詢
-
-## 車輛進出管理
-
-* 車輛進出管控
-* 車輛進出紀錄
-* 進出資訊查詢
-
-## 停車資訊查詢
-
-* 停車位資訊查詢
-* 車牌資訊查詢
-* 住戶與停車位對應查詢
-
----
-
-# 資料庫
-
-* 使用 MySQL 資料庫 。
-* 資料庫關聯圖 (ER Diagram)
-
-       [admin_registration] (管理員註冊)
-      ┌─────────────────────────────┐
-      │ PK │ id                     │
-      │    │ account, password, name│
-      │    │ phone, date, class1    │
-      └─────────────────────────────┘
-
-       [resident] (社區住戶)
-      ┌─────────────────────────────┐
-      │ PK │ resident_id            │───────────────┐
-      │    │ address_simple         │               │
-      │    │ address_complete       │               │
-      │    │ parking_space_owner    │               │
-      │    │ parking_space_user     │               │
-      └─────────────────────────────┘               │ (resident_id) 住戶ID
-                                                    │ 1 對 N
-                                                    │ 
-       [car_registration] (車輛登記)                 │
-      ┌─────────────────────────────┐               │
-      │ FK │ resident_id            │◄──────────────┘
-      │    │ address_simple         │
-      │    │ car_serial_number      │                
-      │ PK │ license_plate_number   │───────────────┐
-      │    │ occupied_available     │               │
-      │    │ car_user,car_user_phone│               │
-      └─────────────────────────────┘               │ 
-                                                    │ (license_plate_number) 車牌號碼
-       [access_logs] (進出紀錄)                      │ 1 對 N
-      ┌─────────────────────────────┐               │
-      │    │ date                   │               │
-      │ FK │ license_plate_number   │◄──────────────┘
-      │    │ car_user,car_user_phone│
-      │    │ entry_exit             │
-      │    │ reason, alert          │
-      └─────────────────────────────┘
-
-
-
-
-
----
-
-# 執行方式
-
-1. 匯入 Maven Project。
-2. 設定 JDK 11。
-3. 建立 MySQL 資料庫並匯入 SQL。
-4. 修改資料庫連線設定。
-5. 執行登入畫面作為系統入口。
-
----
-
-# 使用的應用技術
-
-* 前端 Java Script / 車牌辨識 / Azure API
-* 後端 Java JAX-RS + JDBC
-* session
-* Token
-* MySQL
-* Maven
-* MVC Pattern
-* DAO Pattern
-* SSH
-
----
-
-# 專案特色
-
-* 採用分層式架構設計，方便維護與擴充。
-* 使用MVC DAO pattern 將資料庫操作與java寫法將程式商業化。
-* 提供圖形化操作介面，提升使用便利性。
-* 透過 MySQL 儲存住戶、車輛及停車相關資料。
+1. **車牌自動辨識與進出授權**：於入口/出口設置攝影機拍照，透過 **Azure AI Vision (OCR)** 雲端辨識車牌，比對車籍登記資料後決定是否開啟閘門。
+2. **硬體閘門控制**：授權成功後，透過 **SSH (JSch)** 連線至閘門控制器主機（`192.168.137.142`），遠端呼叫 `CallBeepX` 程式執行 `CallBeep.java` 開啟閘門/蜂鳴器。
+3. **住戶與車籍資料管理**：管理人員可查詢住戶、維護車位所有人/使用人、登記車輛（每戶最多 2 台）。
+4. **後台會員權限管理**：超級管理員可管理一般管理員帳號（新增/修改/刪除/查詢），並以 JWT Token 做身分驗證與權限控管。
+5. **進出紀錄查詢**：可依日期區間與車牌查詢車輛進出歷史紀錄。
 
 ---
 
 
 
+## <span style="color:#1F4E79;">▍</span> 2. 需求分析 (Requirements)
+
+### 2.1 使用者角色
+
+<table style="width:100%;border-collapse:collapse;font-size:15px;">
+  <thead>
+    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">角色</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">權限等級 (class1)</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">主要功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F7FAFD;">
+      <td style="padding:7px 12px;border:1px solid #AED1EE;"><b>超級管理員 (Super Admin)</b></td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;text-align:center;color:#1F4E79;font-weight:bold;">1</td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;">管理所有管理員帳號、查看所有管理員資料、完整停車管理與住戶/車籍維護</td>
+    </tr>
+    <tr style="background:#F7FAFD;">
+      <td style="padding:7px 12px;border:1px solid #AED1EE;"><b>一般管理員 (Manager)</b></td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;text-align:center;color:#1F4E79;font-weight:bold;">2</td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;">停車管理、住戶查詢與維護、車籍登記、進出紀錄查詢（僅能查詢自身帳號資料）</td>
+    </tr>
+    <tr style="background:#F7FAFD;">
+      <td style="padding:7px 12px;border:1px solid #AED1EE;"><b>車輛使用者（住戶）</b></td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;text-align:center;color:#7F8C8D;">—</td>
+      <td style="padding:7px 12px;border:1px solid #AED1EE;">透過車牌辨識自動進出停車場，無需登入操作</td>
+    </tr>
+  </tbody>
+</table>
+
+### 2.2 功能需求
+
+#### 2.2.1 入口授權流程（Entry）
+
+- 上傳入口攝影機照片。
+- 呼叫 Azure OCR 辨識車牌。
+- 檢查車牌是否為「已登記」車輛。
+- 檢查該住戶之車位是否「尚未占用」（任一已登記車在場內 → 禁入）。
+- 條件全部通過 → 更新停車狀態為「場內 (Inside)」、寫入進出紀錄、開啟閘門。
+- 任一條件未通過 → 拒絕進入並回傳失敗原因。
+
+#### 2.2.2 出口授權流程（Exit）
+
+- 上傳出口照片 → Azure 辨識車牌。
+- 檢查是否為已登記車輛。
+- 通過 → 更新停車狀態為「已出場」、寫入進出紀錄、開啟閘門。
+- 未登記 → 拒絕出場。
+
+#### 2.2.3 後台管理功能
+
+- **登入**：帳號 + 密碼（BCrypt 加密驗證），成功後發放 JWT Token（10 分鐘有效）。
+- **會員（管理員）管理**（`superadmin.html`）：新增、修改、刪除、查詢管理員帳號。
+  - 等級 1 可查詢/管理所有管理員。
+  - 等級 2 僅能查詢/修改自身帳號。
+- **住戶管理**（`manager1.html`）：依「車牌／門牌／車位／住戶ID」查詢住戶。
+- **住戶資料維護**（`update.html`）：修改車位所有人/使用人及其電話。
+- **車籍維護**（`updatecar.html`）：新增（每戶上限 2 台）、刪除（軟刪除）車輛登記。
+- **進出紀錄查詢**：依日期區間 + 車牌查詢。
+
+### 2.3 非功能需求
+
+- 車牌格式須符合台灣車牌規則（英數組合，中間含「`-`」）。
+- 車牌資料一律「轉大寫」儲存與比對。
+- 所有管理後台 API 需附帶 JWT Token 進行身分驗證（除外白名單）。
+- 敏感資料（Azure 金鑰、SSH 帳密、Token 密鑰）以 `.env` 檔案存放並 AES 加解密。
+
+---
+
+## <span style="color:#1F4E79;">▍</span> 3. 規格說明 (Specifications)
+
+### 3.1 技術架構
 
 
-```
 
-    
-    %%==進出確認作業===========================================================
-    OptionUi --> AccProc[AccessUi 車輛進出管制模擬]
-    
-    %% 進出管控判定流程
-    AccProc --> Check2{車輛登記 / 車位使用 判定?}
-    Check2 -- 進場 驗證成功 --> PassEntry[授權開門進入]
-    Check2 -- 進場 驗證失敗 --> FailEntry[拒絕進入]
-    Check2 -- 離場 驗證成功 --> PassExit[授權開門離開]
-    Check2 -- 離場 驗證失敗 --> FailExit[拒絕離場]
+![](技術架構.png)
 
-    %% 回到進出確認(循環)
-    PassEntry --> AccProc
-    FailEntry --> AccProc
-    PassExit --> AccProc
-    FailExit --> AccProc
+### 3.2 開發環境與相依套件
+
+<table style="width:100%;border-collapse:collapse;font-size:15px;">
+  <thead>
+    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:25%;">項目</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">規格</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>Java</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">21（<code>maven.compiler.source/target = 21</code>）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>應用伺服器</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">Apache Tomcat 10.1（HTTP Port 8080）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>前端</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">HTML5 + JavaScript + fetch + localStorage/sessionStorage</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>後端</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">Jakarta EE 10、JAX-RS 3.1 + Jersey 3.1.6</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>資料庫</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">MySQL（<code>com.mysql:mysql-connector-j:8.4.0</code>），資料庫名稱 <code>gjun</code></td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>車牌辨識</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">Azure AI Vision ImageAnalysis SDK <code>1.0.0</code>（OCR / READ）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>閘門控制</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">JSch <code>0.1.55</code>（SSH 遠端執行）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>認證</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">JJWT <code>0.12.6</code>（JWT 產生/驗證）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>密碼加密</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">jBCrypt <code>0.4</code>（BCrypt hash）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><b>敏感資料</b></td><td style="padding:7px 12px;border:1px solid #AED1EE;">dotenv-java <code>3.0.0</code> + AES（<code>EncryptionUtil</code>）</td></tr>
+
+</tbody>
+</table>
+
+### 3.3 應用程式基礎結構
+
+- REST API 根路徑：`@ApplicationPath("/api")`（`config/MyAppConfig.java`）
+- 主要 Controller：`controller/hello/login.java`（`/api/hello/login/...`）、`EntryPhoto`（`/api/entry`）、`ExitPhoto`（`/api/exit`）
+- MVC分層架構：**前端Web → 後端Controller → Service → DAO → JDBC → MySQL**
+- 認證過濾器：`util/JwtAuthenticationFilter.java`（`@Provider`）
+
+### 3.4 資料庫規格（MySQL, database: `gjun`）
+
+<table style="width:100%;border-collapse:collapse;font-size:14px;">
+  <thead>
+    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:20%;">資料表</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:15%;">用途</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">主要欄位</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">resident</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">住戶資料</td><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>resident_id</code>(PK)、<code>address_simple</code>、<code>address_complete</code>、<code>parking_space_owner</code>、<code>parking_space_owner_phone</code>、<code>parking_space_user</code>、<code>parking_space_user_phone</code>、<code>parking_space_number</code>、<code>parking_space_floor</code>、<code>create_date</code>、<code>update_date</code></td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">car_registration</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">車籍登記</td><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>resident_id</code>、<code>address_simple</code>、<code>car_serial_number</code>、<code>license_plate_number</code>、<code>occupied_available</code>(Inside=場內)、<code>car_user</code>、<code>car_user_phone</code>、<code>car_registration_date</code>、<code>delete_registration</code>(yes=軟刪除)</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">admin_registration</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">管理員帳號</td><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>id</code>、<code>account</code>、<code>password</code>(BCrypt)、<code>name</code>、<code>phone</code>、<code>date</code>、<code>class1</code>(1=超級管理員, 2=一般管理員)</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">access_logs</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">進出紀錄</td><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>id</code>、<code>date</code>、<code>license_plate_number</code>、<code>car_user</code>、<code>car_user_phone</code>、<code>entry_exit</code>(Entry/Exit)、<code>reason</code>、<code>alert</code></td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">檢視表 (view)</td><td style="padding:7px 12px;border:1px solid #AED1EE;">彙總查詢</td><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>vo_resident_parking</code>（住戶+車籍+車位彙總）、<code>vo_license_plate_number_list</code></td></tr>
+  </tbody>
+</table>
+
+### 3.5 主要 API 規格
+
+<table style="width:100%;border-collapse:collapse;font-size:14px;">
+  <thead>
+    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:12%;">Method</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:40%;">路徑（相對於 <code>/api</code>）</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">功能</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:10%;">需 JWT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">API測試 (Hello World)</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B03A2E;">—</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/login</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">登入，回傳 JWT</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B9770E;">否（白名單）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getallmanager</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">超級管理員（等級1）</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getmanager</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">一般管理員（等級2）</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B03A2E;font-weight:bold;">POST/PUT<br>DELETE</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/admcrud[/{id}]</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">新增/修改/刪除管理員</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getallresident</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">查詢所有住戶</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getallresidentbylot</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">查詢所有住戶（Web用）</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getallcarregistration</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">查詢所有車籍</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getallresidentparking</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">查詢住戶+停車彙總</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getEntryExit/{from}/{end}/{plate}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">查詢進出紀錄</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getresidentbylicenseplatenumber/{no}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">車牌查住戶</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getresidentbyaddresssimple/{addr}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">門牌查住戶</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getresidentbyid/{id}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">ID查住戶</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getresidentbyparkingspacenumber/{no}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">車位查住戶</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getresidentforcombobox</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">門牌下拉選單</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B9770E;">否（白名單）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getparkingnumberforcombobox</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">車位下拉選單</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B9770E;">否（白名單）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/updateresident</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">更新住戶資料</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/insertcarregistration</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">新增車籍</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/delete/{id}/{plate}</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">刪除車籍（軟刪除）</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/setsession</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">寫入 Session 暫存</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/getsession</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">讀取 Session 暫存</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#21618C;font-weight:bold;">GET</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/hello/validation</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">Token 驗證</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;">是</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/entry</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">入口拍照+授權</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B9770E;">否（白名單）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#1E8449;font-weight:bold;">POST</td><td style="padding:6px 12px;border:1px solid #AED1EE;"><code>/exit</code></td><td style="padding:6px 12px;border:1px solid #AED1EE;">出口拍照+授權</td><td style="padding:6px 12px;border:1px solid #AED1EE;text-align:center;color:#B9770E;">否（白名單）</td></tr>
+  </tbody>
+</table>
+
+### 3.6 前端畫面（webapp）
+
+<table style="width:100%;border-collapse:collapse;font-size:15px;">
+  <thead>
+    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+      <th style="padding:8px 12px;border:1px solid #AED1EE;width:30%;">檔案</th>
+      <th style="padding:8px 12px;border:1px solid #AED1EE;">功能</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>index.jsp</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">首頁，自動轉跳 <code>login.html</code></td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">login.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">登入頁</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>manager1.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">住戶管理主頁（查詢/維護入口）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">manager2.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">管理頁（住戶/車輛登記/停車批量查詢）</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>superadmin.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">管理員帳號管理</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">update.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">住戶資料修改</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>updatecar.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">車籍（車輛）新增/刪除</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code style="color:#1F4E79;font-weight:bold;">entry.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">入口拍照上傳</td></tr>
+    <tr style="background:#F7FAFD;"><td style="padding:7px 12px;border:1px solid #AED1EE;"><code>exit.html</code></td><td style="padding:7px 12px;border:1px solid #AED1EE;">出口拍照上傳</td></tr>
+  </tbody>
+</table>
+
+---
+
+<div style="page-break-after: always;"></div>
+
+# <span style="color:#1F4E79;">▍</span> 4. 流程圖 (Flowcharts)
+
+## 4.1 整體系統流程圖
+
+![](整體系統流程圖.png)
 
 
 
+## 4.2 入口授權詳細流程圖（AuthorizationEntry）
 
+![](入口授權詳細流程圖.png)
 
+<div style="page-break-after: always;"></div>
 
-    %% 應用樣式套用
-    class Start,End startEnd;
-    class LoginUi,MainPageUi,AdminUi,ResidentUi,CarUi,AccessUi,ParkingUi,AccProc ui;
-    class Check,Check2 decision;
-    class AdminProc,ResProc,CarProc,ParkProc,PassEntry,PassExit module;
-    class Fail,FailEntry,FailExit error;
-```
+## 4.3 出口授權詳細流程圖（AuthorizationExit）
 
+![](出口授權詳細流程圖.png)
 
+<div style="page-break-after: always;"></div>
 
+## 4.4 後台登入與權限流程圖
 
-# 操作方式
-## 車輛進出管控模擬:
-* 左邊輸入車號後按確認模擬車輛進入,管制內容 (1)已登入的車輛 及(2)車輛未進停車場才會開門放行, 如果車輛已進停車場將管制進入. 
-* 右邊輸入車號後按確認模擬車輛外出,管制內容 (1)已登入的車輛即可開門放行
-* 每住戶可登記兩台車輛, 若其中一台車輛已進入停車場, 另一台車輛將管制開門進入, 直到車子離開停車場.
-* 未登記車輛禁止進出.
-  <br><br>
-  <img width="890" height="502" alt="image" src="https://github.com/user-attachments/assets/5611fecf-d35d-41ab-b8e4-2ebf8c847220" />
+![](後台登入與權限流程圖.png)
 
-## 住戶資料查詢及更新 
-* 依下拉式選單查詢住戶資料
-* 先查詢住戶資料後,提供更新按鈕更新住戶資料
-* 住戶車輛及停車位狀態查詢
-* 提供刪除及新增按鈕,進行刪除或新增住戶的車輛登記
-  <br><br>
-  <img width="984" height="776" alt="image" src="https://github.com/user-attachments/assets/662f2be8-0cdb-44ff-b239-5f3fc7d33577" />
+<div style="page-break-after: always;"></div>
 
-## 批量查詢
-* 選擇批量查詢進入下列選項:
-* 車輛進出記錄查詢(依據日期及車號)
-* 社區停車位使用狀態批量查詢
-* 已登記車輛批量查詢
-* 住戶資料批量查詢
-  <br><br>
-  <img width="1359" height="817" alt="image" src="https://github.com/user-attachments/assets/03c5dac6-302e-404f-89cf-0509bb36ddbd" />
+## 4.5 車輛登記/刪除流程圖
 
+![](車輛登記刪除流程圖.png)
 
-* 一般管理員帳戶 查詢/新增/刪除/修改
-* 需使用超級管理員(admin)權限才能查詢/新增/刪除/修改
-  <br><br>
-  <img width="640" height="472" alt="image" src="https://github.com/user-attachments/assets/e588b614-3e29-4a62-b66e-fed00a13cc88" />
+---
+
+## <span style="color:#1F4E79;">▍</span> 5. 安全機制
+
+<table style="width:100%;border-collapse:collapse;font-size:15px;">
+  <tbody>
+    <tr style="background:#FCF3CF;border:1px solid #F1C40F;">
+      <td style="padding:10px 14px;border:1px solid #F1C40F;color:#7D6608;"><b>① 密碼加密</b></td>
+      <td style="padding:10px 14px;border:1px solid #F1C40F;">管理員密碼以 <b>BCrypt</b>（加鹽）雜湊儲存，登入時以 <code>checkPassword</code> 驗證；查詢回傳時以 <code>***</code> 遮罩。</td>
+    </tr>
+    <tr style="background:#D6EAF8;border:1px solid #2E86C1;">
+      <td style="padding:10px 14px;border:1px solid #2E86C1;color:#154360;"><b>② JWT 認證</b></td>
+      <td style="padding:10px 14px;border:1px solid #2E86C1;">登入後發放 JWT（<code>myTokenSecurtKey</code> 簽章，10 分鐘有效）；<code>JwtAuthenticationFilter</code> 攔截所有後台請求，未帶有效 <code>Bearer Token</code> 回傳 401。</td>
+    </tr>
+    <tr style="background:#D5F5E3;border:1px solid #27AE60;">
+      <td style="padding:10px 14px;border:1px solid #27AE60;color:#145A32;"><b>③ 白名單</b></td>
+      <td style="padding:10px 14px;border:1px solid #27AE60;"><code>/hello/login</code>、下拉選單、<code>/entry</code>、<code>/exit</code> 不需 Token（進出授權需允許未登入使用）。</td>
+    </tr>
+    <tr style="background:#FADBD8;border:1px solid #E74C3C;">
+      <td style="padding:10px 14px;border:1px solid #E74C3C;color:#78281F;"><b>④ 敏感資料加密</b></td>
+      <td style="padding:10px 14px;border:1px solid #E74C3C;">Azure 金鑰、SSH 帳密、Token 密鑰存放於 <code>.env</code>（<code>F:\Public\TerenceData\security\.env</code>），以 <b>AES</b> 加解密後使用（<code>EncryptionUtil</code>）。</td>
+    </tr>
+    <tr style="background:#D6EAF8;border:1px solid #2E86C1;">
+      <td style="padding:10px 14px;border:1px solid #2E86C1;color:#154360;"><b>⑤ 資料庫連線</b></td>
+      <td style="padding:10px 14px;border:1px solid #2E86C1;">使用 <code>PreparedStatement</code> 防範 SQL Injection。</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+---
+
+## <span style="color:#1F4E79;">▍</span> 6. 結語
+
+此專案已完整實作「社區停車場車牌辨識智慧進出管理」之核心閉環：
+
+> <span style="color:#1F4E79;font-weight:bold;font-size:16px;">拍照 → Azure OCR 辨識車牌 → 車籍/占用狀態驗證 → 寫入進出紀錄 → SSH 閘門控制</span>
+
+並提供具權限控管（JWT + BCrypt）的後台管理介面，涵蓋住戶、車籍、管理員與進出紀錄之維護與查詢，架構採 `Controller → Service → DAO → JDBC` 分層，易於擴充與維護。
+
+</div>
