@@ -138,7 +138,7 @@
 ### 3.3 應用程式基礎結構
 
 - REST API 根路徑：`@ApplicationPath("/api")`（`config/MyAppConfig.java`）
-- 主要 Controller：`controller/hello/login.java`（`/api/hello/login/...`）、`EntryPhoto`（`/api/entry`）、`ExitPhoto`（`/api/exit`）
+- 主要 Controller：`controller/hello.java`（`/api/hello/login/...`）、`EntryPhoto`（`/api/entry`）、`ExitPhoto`（`/api/exit`）
 - MVC分層架構：**前端Web → 後端Controller → Service → DAO → JDBC → MySQL**
 - 認證過濾器：`util/JwtAuthenticationFilter.java`（`@Provider`）
 
