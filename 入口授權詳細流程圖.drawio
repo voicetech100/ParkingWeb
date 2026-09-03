@@ -1,0 +1,142 @@
+<mxfile host="Electron">
+  <diagram name="第 1 页" id="Vwa4Hu4vM5LHQviRqg0g">
+    <mxGraphModel dx="1212" dy="746" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="" mermaidData="{&#xa;  &quot;data&quot;: &quot;flowchart TD\n    S([開始: 收到入口車牌]) --&gt; A[檢查車牌是否已登記?&lt;br&gt;CheckCarRegistrationExistByLicensePlateNumber]\n    A --&gt;|未登記| R1[回傳: 授權失敗~非登記車輛]\n    A --&gt;|已登記| B[取得車牌登記資料 GetCarRegistrationByLicensePlateNumber]\n    B --&gt; C{登記資料是否為空?}\n    C --&gt;|空| R2[回傳: 授權失敗~拒絕未登記車輛進入]\n    C --&gt;|有資料| D[依 residentId 取得該住戶所有車輛]\n    D --&gt; E{逐一檢查是否任一車在場內&lt;br&gt;occupied_available == Inside?}\n    E --&gt;|是| R3[回傳: 授權失敗~車位已在使用中]\n    E --&gt;|否| F[將該車 occupied_available 設為 Inside 並更新]\n    F --&gt; G[寫入進場紀錄 InsertCarEntryLog Entry]\n    G --&gt; H[SSH 開啟閘門 openParkingGate]\n    H --&gt; R4[回傳: 授權成功~入口]\n\n    classDef start fill:#1F4E79,stroke:#14365E,color:#FFFFFF,font-weight:bold;\n    classDef process fill:#D6EAF8,stroke:#2E86C1,color:#154360,font-weight:bold;\n    classDef decision fill:#FCF3CF,stroke:#D4AC0D,color:#7D6608,font-weight:bold;\n    classDef ok fill:#D5F5E3,stroke:#27AE60,color:#145A32,font-weight:bold;\n    classDef fail fill:#FADBD8,stroke:#E74C3C,color:#78281F,font-weight:bold;\n\n    class S start;\n    class A,B,D,F,G,H process;\n    class C,E decision;\n    class R1,R2,R3 fail;\n    class R4 ok;&quot;,&#xa;  &quot;config&quot;: null&#xa;}" id="X1uceqZe1bqz-TSNVF1H-1">
+          <mxCell connectable="0" parent="1" style="group;editIcon=1;lockedGroup=0;groupPadding=10;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;transparentBounds=1;" vertex="1">
+            <mxGeometry height="913" width="949" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="開始: 收到入口車牌" mermaidId="n:S" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1;fillColor=#1F4E79;strokeColor=#14365E;fontColor=#FFFFFF;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="開始: 收到入口車牌" id="X1uceqZe1bqz-TSNVF1H-27">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1;fillColor=#1F4E79;strokeColor=#14365E;fontColor=#FFFFFF;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="39" width="163" x="310" y="35" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="檢查車牌是否已登記?&#xa;CheckCarRegistrationExistByLicensePlateNumber" mermaidId="n:A" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="檢查車牌是否已登記?&#xa;CheckCarRegistrationExistByLicensePlateNumber" id="X1uceqZe1bqz-TSNVF1H-28">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="73" width="410" x="186" y="99" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="回傳: 授權失敗~非登記車輛" mermaidId="n:R1" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="回傳: 授權失敗~非登記車輛" id="X1uceqZe1bqz-TSNVF1H-29">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="255" x="26" y="201" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="取得車牌登記資料 GetCarRegistrationByLicensePlateNumber" mermaidId="n:B" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="取得車牌登記資料 GetCarRegistrationByLicensePlateNumber" id="X1uceqZe1bqz-TSNVF1H-30">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="467" x="331" y="201" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="登記資料是否為空?" mermaidId="n:C" mermaidBaseStyle="rhombus;html=1;strokeWidth=1;whiteSpace=wrap;fillColor=#FCF3CF;strokeColor=#D4AC0D;fontColor=#7D6608;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="登記資料是否為空?" id="X1uceqZe1bqz-TSNVF1H-31">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="rhombus;html=1;strokeWidth=1;whiteSpace=wrap;fillColor=#FCF3CF;strokeColor=#D4AC0D;fontColor=#7D6608;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;verticalAlign=middle;" vertex="1">
+            <mxGeometry height="135" width="230" x="274" y="295" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="回傳: 授權失敗~拒絕未登記車輛進入" mermaidId="n:R2" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="回傳: 授權失敗~拒絕未登記車輛進入" id="X1uceqZe1bqz-TSNVF1H-32">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="319" x="59" y="452" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="依 residentId 取得該住戶所有車輛" mermaidId="n:D" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="依 residentId 取得該住戶所有車輛" id="X1uceqZe1bqz-TSNVF1H-33">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="302" x="428" y="452" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="逐一檢查是否任一車在場內&#xa;occupied_available == Inside?" mermaidId="n:E" mermaidBaseStyle="rhombus;html=1;strokeWidth=1;whiteSpace=wrap;fillColor=#FCF3CF;strokeColor=#D4AC0D;fontColor=#7D6608;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="逐一檢查是否任一車在場內&#xa;occupied_available == Inside?" id="X1uceqZe1bqz-TSNVF1H-34">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="rhombus;html=1;strokeWidth=1;whiteSpace=wrap;fillColor=#FCF3CF;strokeColor=#D4AC0D;fontColor=#7D6608;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="135" width="355" x="274" y="556" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="回傳: 授權失敗~車位已在使用中" mermaidId="n:R3" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="回傳: 授權失敗~車位已在使用中" id="X1uceqZe1bqz-TSNVF1H-35">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#FADBD8;strokeColor=#E74C3C;fontColor=#78281F;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="287" x="74" y="731" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="將該車 occupied_available 設為 Inside 並更新" mermaidId="n:F" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="將該車 occupied_available 設為 Inside 並更新" id="X1uceqZe1bqz-TSNVF1H-36">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="387" x="411" y="731" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="寫入進場紀錄 InsertCarEntryLog Entry" mermaidId="n:G" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="寫入進場紀錄 InsertCarEntryLog Entry" id="X1uceqZe1bqz-TSNVF1H-37">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="331" x="439" y="809" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="SSH 開啟閘門 openParkingGate" mermaidId="n:H" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="SSH 開啟閘門 openParkingGate" id="X1uceqZe1bqz-TSNVF1H-38">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D6EAF8;strokeColor=#2E86C1;fontColor=#154360;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="281" x="464" y="887" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="回傳: 授權成功~入口" mermaidId="n:R4" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D5F5E3;strokeColor=#27AE60;fontColor=#145A32;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" mermaidBaseValue="回傳: 授權成功~入口" id="X1uceqZe1bqz-TSNVF1H-39">
+          <mxCell parent="X1uceqZe1bqz-TSNVF1H-1" style="html=1;whiteSpace=wrap;strokeWidth=1;fillColor=#D5F5E3;strokeColor=#27AE60;fontColor=#145A32;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;fontStyle=1;" vertex="1">
+            <mxGeometry height="54" width="207" x="501" y="964" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:S-&gt;A#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-40">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-27" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="X1uceqZe1bqz-TSNVF1H-28">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="未登記" mermaidId="e:A-&gt;R1#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.23;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="未登記" id="X1uceqZe1bqz-TSNVF1H-41">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-28" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.23;exitY=1;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;curved=0;" target="X1uceqZe1bqz-TSNVF1H-29">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="已登記" mermaidId="e:A-&gt;B#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.77;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="已登記" id="X1uceqZe1bqz-TSNVF1H-42">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-28" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.77;exitY=1;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;curved=0;" target="X1uceqZe1bqz-TSNVF1H-30">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:B-&gt;C#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-43">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-30" style="startArrow=none;endArrow=block;endSize=7;strokeColor=default;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;entryDx=0;entryDy=0;strokeWidth=1;curved=0;" target="X1uceqZe1bqz-TSNVF1H-31">
+            <mxGeometry relative="1" as="geometry">
+              <mxPoint x="432" y="287" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="空" mermaidId="e:C-&gt;R2#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0;exitY=0.92;entryX=0.5;entryY=0;" mermaidBaseValue="空" id="X1uceqZe1bqz-TSNVF1H-44">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-31" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0;exitY=0.5;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;curved=0;" target="X1uceqZe1bqz-TSNVF1H-32">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="有資料" mermaidId="e:C-&gt;D#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=1;exitY=0.92;entryX=0.5;entryY=0;" mermaidBaseValue="有資料" id="X1uceqZe1bqz-TSNVF1H-45">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-31" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=1;exitY=0.5;entryX=0.5;entryY=0;rounded=1;verticalAlign=middle;align=center;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;curved=0;" target="X1uceqZe1bqz-TSNVF1H-33">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:D-&gt;E#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-46">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-33" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;curved=0;" target="X1uceqZe1bqz-TSNVF1H-34">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="是" mermaidId="e:E-&gt;R3#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.04;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="是" id="X1uceqZe1bqz-TSNVF1H-47">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-34" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0;exitY=0.5;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;curved=0;" target="X1uceqZe1bqz-TSNVF1H-35">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="否" mermaidId="e:E-&gt;F#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.95;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="否" id="X1uceqZe1bqz-TSNVF1H-48">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-34" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=1;exitY=0.5;entryX=0.5;entryY=0;rounded=1;edgeStyle=orthogonalEdgeStyle;exitDx=0;exitDy=0;curved=0;" target="X1uceqZe1bqz-TSNVF1H-36">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:F-&gt;G#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-49">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-36" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="X1uceqZe1bqz-TSNVF1H-37">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:G-&gt;H#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-50">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-37" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="X1uceqZe1bqz-TSNVF1H-38">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:H-&gt;R4#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;" mermaidBaseValue="" id="X1uceqZe1bqz-TSNVF1H-51">
+          <mxCell edge="1" parent="X1uceqZe1bqz-TSNVF1H-1" source="X1uceqZe1bqz-TSNVF1H-38" style="startArrow=none;endArrow=block;endSize=7;strokeColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;edgeStyle=orthogonalEdgeStyle;" target="X1uceqZe1bqz-TSNVF1H-39">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
