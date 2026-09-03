@@ -143,7 +143,15 @@
 - MVC分層架構：**前端Web → 後端Controller → Service → DAO → JDBC → MySQL**
 - 認證過濾器：`util/JwtAuthenticationFilter.java`（`@Provider`）
 
-### 3.4 資料庫規格（MySQL, database: `gjun`）
+
+### 3.4 MVC分層架構
+![](MVC應用.png)
+
+
+
+
+
+### 3.5 資料庫規格（MySQL, database: `gjun`）
 
 <table style="width:100%;border-collapse:collapse;font-size:14px;">
   <thead>
@@ -162,7 +170,7 @@
   </tbody>
 </table>
 
-### 3.5 主要 API 規格
+### 3.6 主要 API 規格
 
 <table style="width:100%;border-collapse:collapse;font-size:14px;">
   <thead>
@@ -201,7 +209,7 @@
   </tbody>
 </table>
 
-### 3.6 前端畫面（webapp）
+### 3.7 前端畫面（webapp）
 
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
   <thead>
