@@ -6,12 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import dao.ResidentDao;
-import model.AccessTable;
-import model.CarRegistrationTable;
 import model.ResidentTable;
-import service.impl.ResidentServiceImpl;
 import util.DbConnection;
 
 

@@ -1,9 +1,7 @@
 package service.impl;
 
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 import dao.ResidentDao;
 import dao.impl.ResidentDaoImpl;
 import model.ResidentTable;

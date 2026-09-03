@@ -1,36 +1,9 @@
 package controller;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
-import com.azure.ai.vision.imageanalysis.ImageAnalysisClient;
-import com.azure.ai.vision.imageanalysis.ImageAnalysisClientBuilder;
-import com.azure.ai.vision.imageanalysis.models.DetectedTextBlock;
-import com.azure.ai.vision.imageanalysis.models.DetectedTextLine;
-import com.azure.ai.vision.imageanalysis.models.ImageAnalysisResult;
-import com.azure.ai.vision.imageanalysis.models.VisualFeatures;
-import com.azure.core.credential.AzureKeyCredential;
-import com.azure.core.util.BinaryData;
-
-import jakarta.servlet.http.HttpServletRequest; // 🌟 變更為 jakarta 20260813 add
 import jakarta.servlet.http.HttpSession;        // 🌟 變更為 jakarta 20260813 add
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -43,8 +16,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriInfo;
-import jakarta.ws.rs.core.Response.Status;
 import model.AccessTable;
 import model.AdminRegistrationTable;
 import model.CarRegistrationTable;
@@ -57,10 +28,7 @@ import service.impl.AccessServiceImpl;
 import service.impl.AdminRegistrationServiceImpl;
 import service.impl.CarRegistrationServiceImpl;
 import service.impl.ResidentServiceImpl;
-import util.EncryptionUtil;
 import view.ComboResidentParking;
-import view.ComboResidentParkingDao;
-import view.ComboResidentParkingDaoImpl;
 
 
 @Path("/hello")   //    http://localhost:8080/parkingweb/api/hello
@@ -88,10 +56,6 @@ public class hello {
 	    resultMap.put("message", "驗證成功，允許進入管理後台");
 	    return Response.ok(resultMap).build();
 	}
-	
-	
-	
-	
 	
 	
 	
@@ -137,11 +101,6 @@ public class hello {
 	
 	
 
-	
-	
-	
-	
-	
 	
 	
 	
@@ -193,23 +152,6 @@ public class hello {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	//新增manager
     /*{
@@ -243,15 +185,6 @@ public class hello {
 	
 	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -312,13 +245,6 @@ public class hello {
 				return Response.status(Response.Status.NOT_FOUND).entity(Map.of("success",false,"data",list, "message","查無資料")).build();
 			}	// 💡 密碼錯誤不回傳token欄位，避免null造成Map.of報錯
 		}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -389,11 +315,6 @@ public class hello {
 	
 	
 	
-	
-	
-	
-	
-	
 	//抓取車輛登記
 	@GET  //	http://localhost:8080/parkingweb/api/hello/getallcarregistration
 	@Path("/getallcarregistration")   
@@ -408,13 +329,6 @@ public class hello {
 					return Response.status(Response.Status.NOT_FOUND).entity(Map.of("success",false,"data",null)).build();
 				}
 		}
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
@@ -447,10 +361,6 @@ public class hello {
 	
 	
 	
-	
-	
-	
-	
 	//抓取進出紀錄
 	@GET  //	http://localhost:8080/parkingweb/api/hello/getEntryExit/2026-01-10/2026-10-10/one-0002
 	@Path("/getEntryExit/{fromDate}/{endDate}/{licensePlateNumber}")    
@@ -470,80 +380,7 @@ public class hello {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// 1. 寫入 Session API
-	@POST
-	@Path("/setsession")    
-	@Consumes("application/json") 
-	@Produces("application/json;charset=UTF-8")
-	public Response setSessionData(
-		Map<String, Object> payload, 
-	        @Context jakarta.servlet.http.HttpServletRequest request) {
-		System.out.println("【系統收到物件】住戶ID為: " + payload.get("residentId"));
-	    
-	    HttpSession session = request.getSession(true);
-	    // ⭕ 修正：存入的是 Map 物件
-	    session.setAttribute("REPORT_DATA", payload); 
-	    
-	    return Response.ok("{\"success\":true, \"message\":\"Session 資料已成功寫入！\"}").build();
-	}
-
-	
-	
-	
-	// 2. 讀取 Session API
-		@GET
-		@Path("/getsession")
-		@Produces("application/json;charset=UTF-8")
-		public Response getSessionData(@Context jakarta.servlet.http.HttpServletRequest request) {
-		    HttpSession session = request.getSession(false);
-		    if (session != null && session.getAttribute("REPORT_DATA") != null) {
-		        
-		        // ⭕ 修正：這裡必須轉型回 Map<String, Object>，不能轉成 String！
-		        Map<String, Object> myDataMap = (Map<String, Object>) session.getAttribute("REPORT_DATA");
-		        System.out.println("【系統】成功撈到暫存資料，準備送往前端。");
-		        
-		        // 一次性銷毀機制（若有需要再打開）
-		        // session.removeAttribute("REPORT_DATA"); 
-		        
-		        // ⭕ 修正：直接回傳 Map 物件，Jax-RS 會自動將其轉為標準 JSON 格式
-		        return Response.ok(myDataMap).build();
-		    }
-		    // 💡 提示：如果找不到，回傳 401 或含有 success:false 的 JSON
-		    return Response.ok("{\"success\":false, \"message\":\"無暫存資料或階段已過期\"}").build();
-		}
-	
-		//預設30分鐘的計算方式是從使用者最後一次發送網頁請求
-		//修改有效時間
-		//傳統Java專案(修改web.xml)：
-		// <session-config>
-	    //   <session-timeout>15</session-timeout> <!-- 改成 15 分鐘 -->
-		// </session-config>
-		//如果是Spring Boot專案(修改application.properties)：propertiesserver.servlet.session.timeout=15m
 		
-		
-	
-	
-	
-	
-
-	
-	
-	
-	
 		
 		
 		
@@ -633,22 +470,6 @@ public class hello {
 	
 	
 	
-	
-//	//====更新修改住戶資料===============================================================================
-//	@GET //先用GET比較好測試,後續再改POSE
-//	@Path("/updateresident/{id}/{parkingowner}/{parkingownerphone}/{parkinguser}/{parkinguserphone}")
-//	public Response updateResidentByResidentId(
-//	    @PathParam("id") String residentid,
-//	    @PathParam("parkingowner") String parkingowner,
-//	    @PathParam("parkingownerphone") String parkingownerphone,
-//	    @PathParam("parkinguser") String parkingspaceuser,
-//	    @PathParam("parkinguserphone") String parkinguserphone
-//	) { //   http://localhost:8080/parkingweb/api/hello/updateresident/A57H15F02/1111/2222/3333/4444
-//		ResidentService resService = new ResidentServiceImpl();
-//		resService.UpdateResidentByResidentId(residentid, parkingowner, parkingownerphone, parkingspaceuser, parkinguserphone);
-//		return Response.ok(Map.of("success", true)).build();
-//	}
-//	
 	//====更新修改住戶資料 (已改成 POST 接收 JSON) ===============================================================================
 	
 	@POST
@@ -900,6 +721,66 @@ public class hello {
 		
 	
 
+	
+		
+
+		
+		
+		// 1. 寫入 Session API
+		@POST
+		@Path("/setsession")    
+		@Consumes("application/json") 
+		@Produces("application/json;charset=UTF-8")
+		public Response setSessionData(
+			Map<String, Object> payload, 
+		        @Context jakarta.servlet.http.HttpServletRequest request) {
+			System.out.println("【系統收到物件】住戶ID為: " + payload.get("residentId"));
+		    
+		    HttpSession session = request.getSession(true);
+		    // ⭕ 修正：存入的是 Map 物件
+		    session.setAttribute("REPORT_DATA", payload); 
+		    
+		    return Response.ok("{\"success\":true, \"message\":\"Session 資料已成功寫入！\"}").build();
+		}
+
+		
+		
+		
+		// 2. 讀取 Session API
+			@GET
+			@Path("/getsession")
+			@Produces("application/json;charset=UTF-8")
+			public Response getSessionData(@Context jakarta.servlet.http.HttpServletRequest request) {
+			    HttpSession session = request.getSession(false);
+			    if (session != null && session.getAttribute("REPORT_DATA") != null) {
+			        
+			        // ⭕ 修正：這裡必須轉型回 Map<String, Object>，不能轉成 String！
+			        Map<String, Object> myDataMap = (Map<String, Object>) session.getAttribute("REPORT_DATA");
+			        System.out.println("【系統】成功撈到暫存資料，準備送往前端。");
+			        
+			        // 一次性銷毀機制（若有需要再打開）
+			        // session.removeAttribute("REPORT_DATA"); 
+			        
+			        // ⭕ 修正：直接回傳 Map 物件，Jax-RS 會自動將其轉為標準 JSON 格式
+			        return Response.ok(myDataMap).build();
+			    }
+			    // 💡 提示：如果找不到，回傳 401 或含有 success:false 的 JSON
+			    return Response.ok("{\"success\":false, \"message\":\"無暫存資料或階段已過期\"}").build();
+			}
+		
+			//預設30分鐘的計算方式是從使用者最後一次發送網頁請求
+			//修改有效時間
+			//傳統Java專案(修改web.xml)：
+			// <session-config>
+		    //   <session-timeout>15</session-timeout> <!-- 改成 15 分鐘 -->
+			// </session-config>
+			//如果是Spring Boot專案(修改application.properties)：propertiesserver.servlet.session.timeout=15m
+		
+			
+		
+
+		
+		
 		
 		
 		

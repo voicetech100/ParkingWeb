@@ -2,9 +2,7 @@ package service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 import dao.AccessDao;
 import dao.impl.AccessDaoImpl;
 import model.AccessTable;

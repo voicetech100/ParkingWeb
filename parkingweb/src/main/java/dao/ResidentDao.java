@@ -1,11 +1,6 @@
 package dao;
 
 import java.util.List;
-
-import javax.swing.table.DefaultTableModel;
-
-import model.AccessTable;
-import model.CarRegistrationTable;
 import model.ResidentTable;
 
 public interface ResidentDao {

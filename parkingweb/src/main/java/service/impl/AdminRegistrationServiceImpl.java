@@ -108,11 +108,7 @@ public class AdminRegistrationServiceImpl implements AdminRegistrationService{
 	public String InsertAccount(AdminRegistrationTable adminregistration) {
 		System.out.println("@AdmRegServiceInsert11111");
 		int i = 0;
-	    //阻斷非法的無效請求（防禦性設計）
-	    if (adminregistration == null) { 
-	    	return "非法查詢";
-	    }
-	    //檢查必要欄位是否為空
+	    //阻斷非法的無效請求（防禦設計）,檢查必要欄位是否為空
 	    if (adminregistration == null) {
 	    	return "資料不能為空！";
 	    }

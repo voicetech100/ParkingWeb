@@ -6,10 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import dao.AccessDao;
 import model.AccessTable;
-import service.impl.AccessServiceImpl;
 import util.DbConnection;
 
 public class AccessDaoImpl implements AccessDao{
