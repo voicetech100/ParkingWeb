@@ -306,7 +306,7 @@
 ---
 
 
-## <span style="color:#1F4E79;">▍</span> 7. 使用者Web介面介紹
+## <span style="color:#1F4E79;">▍</span> 6. 使用者Web介面介紹
 ![](登入.png)
 
 ![](入口.png)
