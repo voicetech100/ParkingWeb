@@ -23,7 +23,7 @@
 
 
 <div style="page-break-after: always;"></div>
-## <span style="color:#1F4E79;">▍</span> 1. 專案概述
+# 1. 專案概述
 
 本系統是一套以 **車牌辨識 (License Plate Recognition, LPR)** 為核心的社區停車場管理系統，提供：
 
