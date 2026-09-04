@@ -110,6 +110,7 @@
 
 
 <div style="page-break-after: always;"></div>
+
 ## <span style="color:#1F4E79;">▍</span> 3. 規格說明 (Specifications)
 
 ### 3.1 技術架構
@@ -279,7 +280,7 @@
 
 <div style="page-break-after: always;"></div>
 
-## <span style="color:#1F4E79;">▍</span> 5. 安全機制
+# <span style="color:#1F4E79;">▍</span> 5. 安全機制
 
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
   <tbody>
@@ -311,7 +312,7 @@
 
 <div style="page-break-after: always;"></div>
 
-## <span style="color:#1F4E79;">▍</span> 6. 使用者Web介面介紹
+# <span style="color:#1F4E79;">▍</span> 6. 使用者Web介面介紹
 ![](登入.png)
 
 ![](入口.png)
@@ -334,7 +335,7 @@
 
 <div style="page-break-after: always;"></div>
 
-## <span style="color:#1F4E79;">▍</span> 7. 結語
+# <span style="color:#1F4E79;">▍</span> 7. 結語
 
 此專案已完整實作「社區停車場車牌辨識智慧進出管理」之核心閉環：
 
