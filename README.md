@@ -1,16 +1,32 @@
-# <span style="color:#1F4E79;">▍</span> e居家
-<div style="text-align: center; width: 100%;"><span style="color:#1F4E79;font-size:2em;font-weight:bold;">社區停車場智慧進出管理系統一體化設計報告</span></div>
+# 
+<div style="text-align: center; width: 100%;">
+	<span style="font-size: 60px; font-weight: bold;">e居家</span>
+</div>
 
-|          |                                                                               |
-| -------- | ----------------------------------------------------------------------------- |
-| 專案路徑 | `\\192.168.137.142\Qsync\ocp20260902`                                         |
-| 專案名稱 | ParkingWeb（社區停車場進出管理系統）                                          |
-| 報告日期 | 2026-09-02                                                                    |
+<div style="text-align: center; width: 100%;">
+<span style=" color:#1F4E79;font-size:2em; font-weight:bold;  font-size: 30px;  ">社區停車場智慧進出管理系統一體化設計報告</span>
+</div>
+
+
+
+
+
+|      |                                           |
+| ---- | ----------------------------------------- |
+| 專案路徑 | `\\192.168.137.142\Qsync\ocp20260902`     |
+| 專案名稱 | ParkingWeb（社區停車場進出管理系統）                   |
+| 報告日期 | 2026-09-02                                |
 | 系統定位 | 社區（住宅大樓）停車場之車牌辨識、進出授權、停車管理與後台管理的 Web 應用系統 |
 
 ---
 
-## 目錄
+
+# <span style="font-size: 30px; font-weight: bold;">目錄</span>
+
+
+
+
+
 
 1. [專案概述](#-1-專案概述)
 2. [需求分析](#-2-需求分析-requirements)
@@ -19,12 +35,14 @@
 5. [安全機制](#-5-安全機制)
 6. [使用者UI介紹](#-6-使用者web介面介紹)
 7. [結語](#-7-結語)
----
 
+
+
+---
 
 <div style="page-break-after: always;"></div>
 
-## <span style="color:#1F4E79;">▍</span> 1. 專案概述
+#<span style="font-size: 30px; font-weight: bold;">1. 專案概述</span>
 
 本系統是一套以 **車牌辨識 (License Plate Recognition, LPR)** 為核心的社區停車場管理系統，提供：
 
@@ -36,16 +54,15 @@
 
 ---
 
-
 <div style="page-break-after: always;"></div>
 
-## <span style="color:#1F4E79;">▍</span> 2. 需求分析 (Requirements)
+## <span style="font-size: 30px; font-weight: bold;">2. 需求分析 (Requirements)</spna>
 
 ### 2.1 使用者角色
 
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
   <thead>
-    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+    <tr style="background:#B4C6E7;color:#FFFFFF;text-align:left;">
       <th style="padding:8px 12px;border:1px solid #AED1EE;">角色</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">權限等級 (class1)</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">主要功能</th>
@@ -115,13 +132,13 @@
 
 ### 3.1 技術架構
 
-![](技術架構.png)
+![](photospng/技術架構.png)
 
 ### 3.2 開發環境與相依套件
 
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
   <thead>
-    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+    <tr style="background:#B4C6E7;color:#FFFFFF;text-align:left;">
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:25%;">項目</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">規格</th>
     </tr>
@@ -150,7 +167,7 @@
 
 
 ### 3.4 MVC分層架構
-![](MVC應用.png)
+![](photospng/MVC應用.png)
 
 
 
@@ -160,7 +177,7 @@
 
 <table style="width:100%;border-collapse:collapse;font-size:14px;">
   <thead>
-    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+    <tr style="background:#B4C6E7;color:#FFFFFF;text-align:left;">
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:20%;">資料表</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:15%;">用途</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">主要欄位</th>
@@ -177,7 +194,7 @@
 
 
 ### 3.6 資料庫結構化語言應用
-![](資料庫結構化語言應用.png)
+![](photospng/資料庫結構化語言應用.png)
 
 
 
@@ -185,7 +202,7 @@
 
 <table style="width:100%;border-collapse:collapse;font-size:14px;">
   <thead>
-    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+    <tr style="background:#B4C6E7;color:#FFFFFF;text-align:left;">
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:12%;">Method</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:40%;">路徑（相對於 <code>/api</code>）</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">功能</th>
@@ -224,7 +241,7 @@
 
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
   <thead>
-    <tr style="background:#1F4E79;color:#FFFFFF;text-align:left;">
+    <tr style="background:#B4C6E7;color:#FFFFFF;text-align:left;">
       <th style="padding:8px 12px;border:1px solid #AED1EE;width:30%;">檔案</th>
       <th style="padding:8px 12px;border:1px solid #AED1EE;">功能</th>
     </tr>
@@ -250,30 +267,30 @@
 
 ## 4.1 整體系統流程圖
 
-![](整體系統流程圖.png)
+![](photospng/整體系統流程圖.png)
 
 
 ## 4.2 入口授權詳細流程圖（AuthorizationEntry）
 
-![](入口授權詳細流程圖.png)
+![](photospng/入口授權詳細流程圖.png)
 
 <div style="page-break-after: always;"></div>
 
 ## 4.3 出口授權詳細流程圖（AuthorizationExit）
 
-![](出口授權詳細流程圖.png)
+![](photospng/出口授權詳細流程圖.png)
 
 <div style="page-break-after: always;"></div>
 
 ## 4.4 後台登入與權限流程圖
 
-![](後台登入與權限流程圖.png)
+![](photospng/後台登入與權限流程圖.png)
 
 <div style="page-break-after: always;"></div>
 
 ## 4.5 車輛登記/刪除流程圖
 
-![](車輛登記刪除流程圖.png)
+![](photospng/車輛登記刪除流程圖.png)
 
 ---
 
@@ -313,23 +330,32 @@
 <div style="page-break-after: always;"></div>
 
 # <span style="color:#1F4E79;">▍</span> 6. 使用者Web介面介紹
-![](登入.png)
 
-![](入口.png)
+![](photospng/登入.png)
 
-![](出口.png)
 
-![](基本資料查詢.png)
+![](photospng/入口.png)
 
-![](住戶基本資料更新.png)
 
-![](住戶車輛登記.png)
+![](photospng/出口.png)
 
-![](進出紀錄查詢.png)
 
-![](車位使用狀態查詢.png)
+![](photospng/基本資料查詢.png)
 
-![](車輛登記查詢.png)
+
+![](photospng/住戶基本資料更新.png)
+
+
+![](photospng/住戶車輛登記.png)
+
+
+![](photospng/進出紀錄查詢.png)
+
+
+![](photospng/車位使用狀態查詢.png)
+
+
+![](photospng/車輛登記查詢.png)
 
 
 
