@@ -1,4 +1,4 @@
-<span style=" text-align: center; width: 100%; font-size: 60px; font-weight: bold;">e居家</span>
+<span style="display: block; text-align: center; width: 100%; font-size: 60px; font-weight: bold;">e居家</span>
 
 <div style="text-align: center; width: 100%;">
 <span style=" color:#1F4E79;font-size:2em; font-weight:bold;  font-size: 30px;  ">社區停車場智慧進出管理系統一體化設計報告</span>
