@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改住戶車位基本資料</title>
+    <!-- 引入 Font Awesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
+    <style>
+        /* 🎨 高對比淺藍白清爽基底 */
+        body {
+            font-family: "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
+            background-color: #dbe4ee; /* 💡 更加沉穩的冰河冷藍背景，完美襯托純白容器 */
+            margin: 0;
+            padding: 40px 20px;
+            color: #0f1c2e; /* 💡 極致深邃的藍黑色文字，取代純黑，質感更佳 */
+        }
+
+        /* 🖥️ 大寬版容器設計 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff; /* 💡 純白底層，與大背景及內部區塊拉出強烈色差 */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 35px rgba(15, 28, 46, 0.15); /* 帶有深藍基調的立體陰影 */
+            border-top: 8px solid #1a5276; /* 頂部深蔚藍加粗飾條 */
+        }
+
+        /* 主標題美化 */
+        h2 {
+            color: #0f1c2e;
+            margin-top: 0;
+            margin-bottom: 35px;
+            font-size: 26px;
+            border-bottom: 3px solid #1a5276; /* 加粗深蔚藍分隔線 */
+            padding-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        h2 i {
+            color: #2980b9; /* 標題圖示採用明亮寶藍 */
+        }
+
+        /* 📋 區域區塊：住戶與車位基本資料區（極大化色差：高飽和晴空藍底） */
+        .resident-section {
+            background-color: #e6f2fa; /* 💡 飽和清晰的晴空藍基底，與純白外層形成強烈的視覺色差 */
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid #2980b9; /* 💡 外框改為 2px 寶藍線條，界定範圍極其明確 */
+            margin-bottom: 30px;
+        }
+
+        /* 🎛️ 響應式四欄網格佈局 */
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 彈性欄位跨距控制 */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .span-2 {
+            grid-column: span 2;
+        }
+
+        /* 🏷️ 標籤樣式 */
+        label {
+            font-size: 14px;
+            font-weight: 800; /* 加粗字體 */
+            margin-bottom: 8px;
+            color: #0f1c2e; /* 💡 標籤一律採用極深藍黑，對比度極高 */
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        label i {
+            color: #1a5276; /* 圖示深蔚藍 */
+        }
+
+        /* ⌨️ 可編輯輸入框美化 */
+        input[type="text"] {
+            padding: 11px 15px;
+            border: 2px solid #2980b9; /* 💡 可編輯欄位一律使用飽和寶藍粗框，極度醒目 */
+            border-radius: 6px;
+            font-size: 15px;
+            color: #0f1c2e;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            background-color: #ffffff; /* 💡 欄位內部保持純白，在晴空藍底色上對比度破表 */
+        }
+
+        /* 焦點集中時的炫藍外框擴散 */
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1a5276;
+            box-shadow: 0 0 0 5px rgba(41, 128, 185, 0.3); /* 沉穩寶藍色擴散暈染 */
+        }
+
+        /* 唯讀（不可修改）欄位的大色差高質感 */
+        input[readonly] {
+            background-color: #b2c9da; /* 💡 大幅加深唯讀底色（迷霧藍灰），一眼即可區分不可點選 */
+            border-color: #7fa4c0;
+            color: #2c3e50;
+            cursor: not-allowed;
+        }
+
+        /* 🎯 按鈕區塊與高級感動態效果 */
+        .btn-box {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 15px;
+            border-top: 3px solid #1a5276; /* 分隔線深蔚藍加粗 */
+            padding-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* 取消按鈕（純白底深藍粗框） */
+        .btn-cancel {
+            background-color: #ffffff;
+            color: #1a5276;
+            border: 2px solid #1a5276;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e6f2fa;
+            color: #0f1c2e;
+        }
+
+        /* 確認送出按鈕（深蔚藍底白字） */
+        .btn-submit {
+            background-color: #1a5276; /* 💡 飽和深蔚藍亮色突顯 */
+            color: #ffffff;
+            border: 2px solid #1a5276;
+            box-shadow: 0 4px 14px rgba(26, 82, 118, 0.3);
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9; /* 懸停轉亮寶藍 */
+            border-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(41, 128, 185, 0.4);
+        }
+
+        /* 📱 手機板畫面自動適應 */
+        @media (max-width: 768px) {
+            .grid-form {
+                grid-template-columns: 1fr;
+            }
+            .span-2, .form-group {
+                grid-column: 1 / -1;
+            }
+            .btn-box {
+                flex-direction: column-reverse;
+                margin-top: 5px;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2><i class="fas fa-parking"></i> 修改住戶車位基本資料</h2>
+    
+    <!-- 💡 住戶資料獨立藍色區塊 (大幅加強的晴空藍與純白層次對比) -->
+    <div class="resident-section">
+        <div class="grid-form">
+            <div class="form-group full-width">
+                <label><i class="fas fa-map-marker-alt"></i> 完整地址</label>
+                <input type="text" id="addressComplete" readonly>
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-key"></i> 住戶代碼 (主鍵不可改)</label>
+                <input type="text" id="residentId" readonly>
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-road"></i> 簡短地址</label>
+                <input type="text" id="addressSimple" readonly>
+            </div>
+
+            <div class="form-group span-2">
+                <label><i class="fas fa-id-card"></i> 車位號碼</label>
+                <input type="text" id="parkingSpaceNumber" readonly>
+            </div>
+          
+            <div class="form-group span-2">
+                <label><i class="fas fa-layer-group"></i> 車位樓層</label>
+                <input type="text" id="parkingSpaceFloor" readonly>
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-user-shield"></i> 車位所有權人</label>
+                <input type="text" id="parkingSpaceOwner">
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-phone"></i> 所有權人電話</label>
+                <input type="text" id="parkingSpaceOwnerPhone">
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-user"></i> 車位使用者</label>
+                <input type="text" id="parkingSpaceUser">
+            </div>
+            
+            <div class="form-group span-2">
+                <label><i class="fas fa-phone-alt"></i> 使用者電話</label>
+                <input type="text" id="parkingSpaceUserPhone">
+            </div>
+        </div>
+    </div>
+
+    <!-- 💡 按鈕區塊（外層純白底色差區） -->
+    <div class="grid-form">
+        <div class="btn-box">
+            <button type="button" class="btn btn-cancel" onclick="cancelUpdate()">
+                <i class="fas fa-arrow-left"></i> 取消返回
+            </button>
+            <button type="button" class="btn btn-submit" onclick="submitDatabaseUpdate()">
+                <i class="fas fa-save"></i> 確認更新送出
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+
+//===========================================================
+// Token
+const token = localStorage.getItem("my_api_token");
+// API基礎路徑
+const API_BASE_URL = sessionStorage.getItem('API_BASE');
+
+document.addEventListener('DOMContentLoaded', function() {
+	    fetch(`${API_BASE_URL}/getsession`, {
+	    method: 'GET',
+	    headers: { 
+	        'Authorization': `Bearer ${token}` 
+	    }
+		})
+	    .then(res => {
+            if (!res.ok) throw new Error('無法連線至伺服器或認證失敗');
+            return res.json(); 
+        })
+        .then(sessionData => {
+            console.log("【初始化】成功拿回對接物件資料：", sessionData);
+            if (sessionData && sessionData.success === false) {
+                throw new Error(sessionData.message || '無暫存資料或階段已過期');
+            }
+            if (sessionData && sessionData.residentId) {
+                const Url = `${API_BASE_URL}/getresidentbyid/${sessionData.residentId}`;
+                return fetch(Url, {
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                        'Authorization': `Bearer ${token}` // token驗證
+                    }
+                	})
+            } else {
+                throw new Error('未偵測到正確的認證資訊，請重新操作。');
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('向資料庫索取詳細資料時發生錯誤');
+            return res.json();
+        })
+        .then(dbData => {
+            if (dbData.success) {
+            	document.getElementById('addressComplete').value = dbData.resident.addressComplete || '';
+                document.getElementById('addressSimple').value = dbData.resident.addressSimple || '';
+                document.getElementById('residentId').value = dbData.resident.residentId || '';
+                document.getElementById('parkingSpaceNumber').value = dbData.resident.parkingSpaceNumber || '';
+                document.getElementById('parkingSpaceFloor').value = dbData.resident.parkingSpaceFloor || '';
+                document.getElementById('parkingSpaceOwner').value = dbData.resident.parkingSpaceOwner || '';
+                document.getElementById('parkingSpaceOwnerPhone').value = dbData.resident.parkingSpaceOwnerPhone || '';
+                document.getElementById('parkingSpaceUser').value = dbData.resident.parkingSpaceUser || '';
+                document.getElementById('parkingSpaceUserPhone').value = dbData.resident.parkingSpaceUserPhone || '';
+                console.log("【系統】住戶詳細資料已成功渲染至各欄位。");
+            } else {
+                alert('撈取資料失敗：' + dbData.message);
+            }
+        })
+        .catch(err => {
+            alert('頁面載入初始化失敗：' + err.message);
+            window.location.href = 'login.html'; 
+        });
+});
+
+
+
+
+
+
+//===住戶資料更新=======================================================
+function submitDatabaseUpdate() {
+    const residentIdBlock = document.getElementById('residentId');//修正改取得DOM元素本身，不直接拿innerText..
+    if (!residentIdBlock || !residentIdBlock.value.trim()) {
+        alert('❌ 錯誤：主鍵「住戶代碼」為空，拒絕送出表單！');
+        return;
+    }
+
+    // 1. 關鍵修正：只收集後端要拿取的5個欄位
+    const finalPayload = {
+        residentId: residentIdBlock.value.trim(),
+        parkingSpaceOwner: document.getElementById('parkingSpaceOwner')?.value.trim() || '',
+        parkingSpaceOwnerPhone: document.getElementById('parkingSpaceOwnerPhone')?.value.trim() || '',
+        parkingSpaceUser: document.getElementById('parkingSpaceUser')?.value.trim() || '',
+        parkingSpaceUserPhone: document.getElementById('parkingSpaceUserPhone')?.value.trim() || ''
+    };
+    
+    const updateDbUrl = `${API_BASE_URL}/updateresident`;
+    // 2. 發送請求至後端
+    fetch(updateDbUrl, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8', 'Authorization': `Bearer ${token}`},
+        body: JSON.stringify(finalPayload) // 👈 這裡直接傳送json的物件
+    })
+    .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('伺服器資料庫改寫拒絕或發生異常');
+    })
+    .then(data => {
+        if (data.success) {
+            alert('🎉 住戶資料已成功更新！');
+            window.location.href = 'manager1.html'; 
+        } else {
+            alert('更新失敗：' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('連線失敗：' + err.message);
+    });
+}
+
+
+
+
+// 🟢 8. 取消按鈕邏輯
+function cancelUpdate() {
+    if (confirm('確定要取消修改並返回嗎？未儲存的變更將會遺失。')) {
+        window.location.href = 'manager1.html';
+    }
+}
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改名下車輛登記清單</title>
+    <!-- 引入 FontAwesome 圖示 -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft JhengHei", Arial, sans-serif; }
+        
+        /* 1. 全螢幕背景：改為略深、沉穩的莫蘭迪灰藍色，與主白色區塊拉開明確的明暗反差 */
+        body {
+            background-color: #dce6f0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        /* 2. 主容器：維持 1360px 滿版寬度，搭配 2.5px 的深海極藍黑外框，四角圓角修飾 */
+        .container {
+            max-width: 1360px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 6px 25px rgba(17, 34, 51, 0.12);
+            padding: 35px;
+            border: 2.5px solid #112233;
+        }
+        
+        /* 3. 頂部標題：深海極藍黑粗體字，底線加粗至 3.5px */
+        .title {
+            font-size: 25px;
+            font-weight: 900;
+            color: #112233;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 3.5px solid #112233;
+        }
+        
+        /* 4. 住戶資訊列：完全還原範例圖片中的中度科技藍灰底色 */
+        .info-bar {
+            display: flex;
+            align-items: center;
+            background-color: #bcd1e3;
+            border: 2px solid #112233;
+            padding: 18px 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+        .info-label {
+            font-weight: 900;
+            color: #112233;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        
+        .info-input-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 住戶資料欄位：純白高對比背景 */
+        .info-value {
+            width: 95%;
+            background-color: #ffffff;
+            color: #112233;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 2px solid #112233;
+            font-weight: 800;
+            font-size: 15px;
+            outline: none;
+        }
+        
+        /* 5. 車輛資料表格：2px 深海極藍黑外框 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border: 2px solid #112233;
+        }
+        
+        /* 表頭：同步改為範例圖片中的中度科技藍灰底色，文字為深色粗體 */
+        th {
+            background-color: #bcd1e3;
+            color: #112233;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 16px 15px;
+            border: 2px solid #112233;
+            text-align: center;
+        }
+        
+        /* 資料列 */
+        td {
+            padding: 14px 12px;
+            border: 2px solid #112233;
+            text-align: center;
+            font-size: 15px;
+            color: #112233;
+            font-weight: 800;
+            vertical-align: middle;
+        }
+        
+        /* 嚴格固定各欄位寬度百分比 */
+        th:nth-child(1), td:nth-child(1) { width: 6%; }
+        th:nth-child(2), td:nth-child(2) { width: 20%; }
+        th:nth-child(3), td:nth-child(3) { width: 20%; }
+        th:nth-child(4), td:nth-child(4) { width: 20%; }
+        th:nth-child(5), td:nth-child(5) { width: 22%; }
+        th:nth-child(6), td:nth-child(6) { width: 12%; }
+
+        /* 表格內輸入框 */
+        input[type="text"] {
+            width: 95%;
+            padding: 10px 12px;
+            border: 2px solid #112233;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #112233;
+            background-color: #ffffff;
+            outline: none;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            border-color: #2c5270;
+            box-shadow: 0 0 0 3px rgba(44, 82, 112, 0.25);
+        }
+        input[type="text"]::placeholder {
+            color: #667788;
+            font-weight: normal;
+        }
+        
+        /* 登記日期 */
+        .date-text {
+            color: #112233;
+            font-weight: 800;
+        }
+        
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* 功能按鈕 */
+        .btn {
+            border: 2px solid #112233;
+            color: white;
+            padding: 8px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            text-align: center;
+            width: 52px;
+            box-sizing: border-box;
+            transition: all 0.1s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* 新增按鈕：加深為厚實的穩重藍色 */
+        .btn-add {
+            background-color: #2c5270;
+        }
+        /* 刪除按鈕：加深為穩重的暗紅色 */
+        .btn-delete {
+            background-color: #c93b3b;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <div class="title"><i class="fas fa-edit"></i> 修改名下車輛登記清單</div>
+    
+    <!-- 上方住戶資訊 -->
+    <div style="display: flex; align-items: center; gap: 18px;" class="info-bar">
+        <div class="info-label">住戶代碼：</div>
+        <div class="info-input-wrapper">
+            <input id="residentIdBlock" class="info-value" value="A57H01F01">
+        </div>
+        <div class="info-label">住戶地址：</div>
+        <div class="info-input-wrapper">
+            <input id="residentAddress" class="info-value" value="新北市汐止區幸福測試路57號01樓-1">
+        </div>
+    </div>
+
+    <!-- 車輛登記資料表 -->
+    <table>
+        <thead>
+            <tr>
+                <th>序號</th>
+                <th>車牌號碼</th>
+                <th>車輛使用者</th>
+                <th>聯絡電話</th>
+                <th>登記日期</th>
+                <th>功能操作</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <!-- 第 1 列 -->
+            <tr>
+                <td>1</td>
+                <td><input type="text" id="car1_plate" placeholder="請輸入車牌"> </td>
+                <td><input type="text" id="car1_user" placeholder="使用者姓名" ></td>
+                <td><input type="text" id="car1_phone" placeholder="聯絡電話" ></td>
+                <td><input type="text" id="car1_date" placeholder="登記日期免輸入" readonly></td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-add" onclick="AddCar1()">新增</button>
+                        <button type="button" class="btn btn-delete" onclick="DelCar1()">刪除</button>
+                    </div>
+                </td>
+            </tr>
+            <!-- 第 2 列 -->
+            <tr>
+                <td>2</td>
+                <td><input type="text" id="car2_plate" placeholder="請輸入車牌"></td>
+                <td><input type="text" id="car2_user" placeholder="使用者姓名"></td>
+                <td><input type="text" id="car2_phone" placeholder="聯絡電話"></td>
+                <td><input type="text" id="car2_date" placeholder="登記日期免輸入" readonly></td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-add" onclick="AddCar2()">新增</button>
+                        <button type="button" class="btn btn-delete" onclick="DelCar2()">刪除</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<script>
+//=======================================================
+// Token
+const token = localStorage.getItem("my_api_token");
+//API基礎路徑
+//const API_BASE_URL = 'http://localhost:8080/MyHomework0803/api/hello';
+const API_BASE_URL = sessionStorage.getItem('API_BASE');
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch(`${API_BASE_URL}/getsession`, {
+    method: 'GET',
+    headers: { 
+        'Authorization': `Bearer ${token}` 
+    }
+	})
+	.then(res => {
+            if (!res.ok) throw new Error('無法連線至伺服器或認證失敗');
+            return res.json(); 
+        })
+        .then(sessionData => {
+
+        	if (sessionData && sessionData.success === false) {
+                throw new Error(sessionData.message || '無暫存資料或階段已過期');
+            }
+        	//const residentid= document.getElecmentById('residentIdBlock');
+            if (sessionData && sessionData.residentId) {
+                const Url = `${API_BASE_URL}/getresidentbyid/${sessionData.residentId}`;
+                return fetch(Url, {
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                        'Authorization': `Bearer ${token}` // 只靠這個驗證
+                    }
+                	})
+            } else {
+                throw new Error('未偵測到正確的認證資訊，請重新操作。');
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('資料庫索取資料時發生錯誤');
+            return res.json();
+        })
+        .then(dbData => {
+        	if (dbData.success) {
+        	    	document.getElementById('residentIdBlock').value=dbData.resident.residentId
+                	document.getElementById('residentAddress').value=dbData.resident.addressSimple
+                	const cars = dbData.carregistration; 
+                	if (cars && cars.length > 0) {
+                		if (cars[0]) {
+                        	document.getElementById('car1_plate').value = cars[0].licensePlateNumber || '';
+	                        document.getElementById('car1_user').value = cars[0].carUser || '';
+	                        document.getElementById('car1_phone').value = cars[0].carUserPhone || '';
+	                        if (document.getElementById('car1_date')) {
+	                            document.getElementById('car1_date').value = cars[0].carRegistrationDate || '';
+	                        }
+	                    }
+	                    if (cars[1]) {
+	                        document.getElementById('car2_plate').value = cars[1].licensePlateNumber || '';
+	                        document.getElementById('car2_user').value = cars[1].carUser || '';
+	                        document.getElementById('car2_phone').value = cars[1].carUserPhone || '';
+	                        if (document.getElementById('car2_date')) {
+	                            document.getElementById('car2_date').value = cars[1].carRegistrationDate || '';
+	                        }
+	                    }
+                	}
+                	//<input type="date"> 或 <input type="text">輸入框必須使用.value，寫.innerText資料帶不進去
+            } else {
+                alert('撈取資料失敗：' + dbData.message);
+            }
+        })
+        .catch(err => {
+            alert('頁面載入初始化失敗：' + err.message);
+            window.location.href = 'manager1.html'; 
+        });
+});
+
+
+
+
+//===========================================================
+
+	function AddCar1() {
+    // 前端欄位防呆驗證（用 alert + return 阻擋提示,避免程式崩潰）
+    const carPlate = document.getElementById('car1_plate')?.value.trim() || '';
+    if (carPlate.length <= 5) {
+        alert('❌ 請輸入車號 > 5 碼');
+        document.getElementById('car1_plate')?.focus(); // 自動點入輸入框
+        return; 
+        }
+    const carUser = document.getElementById('car1_user')?.value.trim() || '';
+    if (carUser.length <= 2) {
+        alert('❌ 請輸入姓名');
+        document.getElementById('car1_user')?.focus();
+        return;
+    }
+    const carPhone = document.getElementById('car1_phone')?.value.trim() || '';
+    if (carPhone.length <= 5) {
+        alert('❌ 請輸入電話');
+        document.getElementById('car1_phone')?.focus();
+        return;
+    }
+    fetch(API_BASE_URL + "/getsession", { 
+        method: 'GET', 
+        headers: { 
+            'Authorization': 'Bearer ' + token 
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('無法連線至伺服器或認證失敗Server');
+        return res.json(); 
+    
+    })
+    .then(() => {
+        const finalPayload = {
+            residentId: document.getElementById('residentIdBlock').value,
+            addressSimple: document.getElementById('residentAddress').value,
+         	carSerialNumber: "1",
+            licensePlateNumber: carPlate,
+            occupiedAvailable: "",
+            parkingSpaceUser: carUser,
+            parkingSpaceUserPhone: carPhone,
+            carregistrationdate: 	""   
+        };
+        const updateDbUrl = API_BASE_URL + "/insertcarregistration";
+        return fetch(updateDbUrl, { 
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Authorization': 'Bearer ' + token 
+            },
+            body: JSON.stringify(finalPayload)
+        });
+    })
+    .then(res => {
+    	if (!res) return; // 前面出錯中斷不執行
+        if (res.ok) return res.json();
+        throw new Error('伺服器資料庫改寫拒絕或發生異常');
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.success) {
+            alert('🎉 車輛資料已成功更新！');
+            window.location.href = 'manager1.html'; 
+        } else {
+            alert('更新失敗：' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('連線失敗：' + err.message);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+//=========================================================
+
+function AddCar2() {
+    const carPlate = document.getElementById('car2_plate')?.value.trim() || '';
+    if (carPlate.length <= 5) {
+        alert('❌ 請輸入車號 > 5 碼');
+        document.getElementById('car2_plate')?.focus();
+        return; 
+    }
+    const carUser = document.getElementById('car2_user')?.value.trim() || '';
+    if (carUser.length <= 2) {
+        alert('❌ 請輸入姓名');
+        document.getElementById('car2_user')?.focus();
+        return;
+    }
+    const carPhone = document.getElementById('car2_phone')?.value.trim() || '';
+    if (carPhone.length <= 5) {
+        alert('❌ 請輸入電話');
+        document.getElementById('car2_phone')?.focus();
+        return;
+    }
+    // 改用逗號隔開網址與設定物件
+    fetch(API_BASE_URL + "/getsession", { 
+        method: 'GET', 
+        headers: { 
+            'Authorization': 'Bearer ' + token 
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('無法連線至伺服器或認證失敗Server');
+        return res.json(); 
+    })
+    .then(() => {
+        const finalPayload = {
+            residentId: document.getElementById('residentIdBlock').value,
+            addressSimple: document.getElementById('residentAddress').value,
+            carSerialNumber: "2", // AddCar2序號固定為"2"
+            licensePlateNumber: carPlate, 
+            occupiedAvailable: "",
+            parkingSpaceUser: carUser,
+            parkingSpaceUserPhone: carPhone,
+            carregistrationdate: ""   
+        };
+        const updateDbUrl = API_BASE_URL + "/insertcarregistration";
+        console.log("發送網址: " + updateDbUrl + "\n發送內容: " + JSON.stringify(finalPayload));
+        return fetch(updateDbUrl, { 
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Authorization': 'Bearer ' + token 
+            },
+            body: JSON.stringify(finalPayload)
+        });
+    })
+    .then(res => {
+        if (!res) return; 
+        if (res.ok) return res.json();
+        throw new Error('伺服器資料庫改寫拒絕或發生異常');
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.success) {
+            alert('🎉 車輛資料已成功更新！');
+            window.location.href = 'manager1.html'; 
+        } else {
+            alert('更新失敗：' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('連線失敗：' + err.message);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==============================================================
+
+function DelCar1() {
+	fetch(API_BASE_URL + "/getsession", { 
+	    method: 'GET', 
+	    headers: { 
+	        'Authorization': 'Bearer ' + token 
+	    }
+	})
+    .then(res => {
+        if (!res.ok) throw new Error('無法連線至伺服器或認證失敗Server');
+        return res.json(); 
+     })
+    .then(() => {
+    	const id=document.getElementById('residentIdBlock').value;
+    	const licensePlateNumber=document.getElementById('car1_plate').value;
+    	const updateDbUrl = `${API_BASE_URL}/delete/${id}/${licensePlateNumber}`;
+    	return fetch(updateDbUrl, { 
+        	method: 'GET',
+    		headers: {'Content-Type':'application/json;charset=UTF-8',
+    		          'Authorization': `Bearer ${token}`
+    		          }
+        })
+    })
+    .then(res => {
+    	if (!res) return;
+        if (res.ok) return res.json();
+        throw new Error('伺服器資料庫改寫拒絕或發生異常');
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.success) {
+            alert('🎉 車輛刪除成功！');
+            window.location.href = 'manager1.html'; 
+        } else {
+            alert('刪除失敗：' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('連線失敗：' + err.message);
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================================================
+
+function DelCar2() {
+    fetch(API_BASE_URL + "/getsession", { 
+    	method: 'GET', 
+        headers: { 
+            'Authorization': 'Bearer ' + token 
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('無法連線至伺服器或認證失敗Server');
+        return res.json(); 
+    })
+    .then(() => {
+        const id = document.getElementById('residentIdBlock').value;
+        const licensePlateNumber = document.getElementById('car2_plate').value;
+        if (!id || !licensePlateNumber) {
+            throw new Error('網頁上找不到住戶代碼或第二台車的車牌號碼');
+        }
+        const updateDbUrl = API_BASE_URL + "/delete/" + id + "/" + licensePlateNumber;
+        console.log("發送網址: " + updateDbUrl + "\n發送內容: 無");
+        return fetch(updateDbUrl, { 
+			method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Authorization': 'Bearer ' + token
+            }
+        });
+    })
+    .then(res => {
+        if (!res) return;
+        if (res.ok) return res.json();
+        throw new Error('伺服器資料庫改寫拒絕或發生異常');
+    })
+    .then(data => {
+        if (!data) return;
+        if (data.success) {
+            alert('🎉 車輛刪除成功！');
+            window.location.href = 'manager1.html'; 
+        } else {
+            alert('刪除失敗：' + data.message);
+        }
+    })
+    .catch(err => {
+        alert('連線失敗：' + err.message);
+    });
+} 
+
+
+</script>
+
+</body>
+
+</html>

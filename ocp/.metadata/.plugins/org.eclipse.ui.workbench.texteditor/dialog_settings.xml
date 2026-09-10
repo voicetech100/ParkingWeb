@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="false"/>
+		<list key="findhistory">
+			<item value="recognizeLicensePlateWithAzure"/>
+			<item value="entry"/>
+			<item value="exit"/>
+			<item value="08"/>
+			<item value="selectAllAccess"/>
+			<item value="getEntryExitWeb"/>
+			<item value="alert"/>
+			<item value="handleImageFile"/>
+			<item value="environment"/>
+			<item value="file"/>
+			<item value="captureBtn"/>
+			<item value="response"/>
+			<item value="FormData"/>
+			<item value="blob"/>
+			<item value="localhost"/>
+		</list>
+	</section>
+</section>
